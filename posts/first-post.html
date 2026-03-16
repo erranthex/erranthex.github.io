@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Launching the blog | Errant Hex</title>
+  <meta
+    name="description"
+    content="The first sample post for the Errant Hex GitHub Pages blog."
+  >
+  <style>
+    :root {
+      --bg: #f4efe7;
+      --paper: rgba(255, 251, 245, 0.88);
+      --ink: #1e1f1c;
+      --muted: #5f6257;
+      --accent: #bd4f2f;
+      --line: rgba(30, 31, 28, 0.12);
+      --shadow: 0 18px 50px rgba(52, 35, 19, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(189, 79, 47, 0.18), transparent 28%),
+        linear-gradient(180deg, #f7f1e6 0%, var(--bg) 58%, #efe6d8 100%);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .page {
+      width: min(820px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 2rem 0 4rem;
+    }
+
+    .site-nav {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .site-nav a {
+      text-decoration: none;
+      color: var(--muted);
+    }
+
+    .site-nav a:hover,
+    .site-nav a:focus-visible {
+      color: var(--accent);
+    }
+
+    .article-shell {
+      padding: 2rem;
+      border-radius: 28px;
+      background: var(--paper);
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      box-shadow: var(--shadow);
+    }
+
+    h1,
+    h2,
+    p {
+      margin: 0;
+    }
+
+    header time {
+      display: inline-block;
+      margin-bottom: 0.8rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.84rem;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 6vw, 4.4rem);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+    }
+
+    .dek {
+      margin-top: 1rem;
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.7;
+    }
+
+    .content {
+      margin-top: 2rem;
+      display: grid;
+      gap: 1.2rem;
+    }
+
+    .content p {
+      line-height: 1.8;
+      color: #36372f;
+    }
+
+    .callout {
+      padding: 1rem 1.1rem;
+      border-left: 4px solid var(--accent);
+      background: rgba(255, 255, 255, 0.62);
+      border-radius: 14px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      margin-top: 2rem;
+      text-decoration: none;
+      color: var(--accent);
+    }
+
+    .back-link:hover,
+    .back-link:focus-visible {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 640px) {
+      .article-shell {
+        padding: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="site-nav" aria-label="Primary">
+      <a href="/">Home</a>
+      <a href="/posts/first-post.html">First post</a>
+    </nav>
+
+    <article class="article-shell">
+      <header>
+        <time datetime="2026-03-15">March 15, 2026</time>
+        <h1>Launching the blog</h1>
+        <p class="dek">
+          This sample post gives you a template for writing on your new GitHub Pages site.
+        </p>
+      </header>
+
+      <section class="content">
+        <p>
+          A first blog post does not need to be ambitious. It needs to establish
+          voice, scope, and enough specificity that the site feels alive instead
+          of abandoned.
+        </p>
+        <p>
+          On a practical level, a simple GitHub Pages blog can stay lightweight:
+          one homepage, one directory for posts, and plain HTML files for each
+          article. That keeps the publishing model obvious while you decide
+          whether you want templates or a generator later.
+        </p>
+        <div class="callout">
+          <p>
+            Replace this text with something personal: what you are building,
+            what you are learning, or what problem keeps returning to your notes.
+          </p>
+        </div>
+        <p>
+          Once you have two or three real posts, the homepage can evolve from a
+          placeholder into a proper archive with summaries, categories, or a
+          short introduction to your recent work.
+        </p>
+      </section>
+
+      <a class="back-link" href="/">Back to homepage</a>
+    </article>
+  </main>
+</body>
+</html>
