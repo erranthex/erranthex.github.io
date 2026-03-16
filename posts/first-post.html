@@ -3,20 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Launching the blog | Errant Hex</title>
+  <title>From Digital Pet to Digital Operator | erranthex</title>
   <meta
     name="description"
-    content="The first sample post for the Errant Hex GitHub Pages blog."
+    content="A personal essay on shaping OpenClaw into a Tamagotchi AI personal agent with memory, proactivity, security, and coordinated execution."
   >
   <style>
     :root {
-      --bg: #f4efe7;
-      --paper: rgba(255, 251, 245, 0.88);
-      --ink: #1e1f1c;
-      --muted: #5f6257;
-      --accent: #bd4f2f;
-      --line: rgba(30, 31, 28, 0.12);
-      --shadow: 0 18px 50px rgba(52, 35, 19, 0.14);
+      --bg: #050712;
+      --panel: rgba(10, 14, 30, 0.9);
+      --panel-soft: rgba(17, 21, 40, 0.8);
+      --ink: #f3f6ff;
+      --muted: #a8b4da;
+      --line: rgba(152, 171, 255, 0.16);
+      --blue: #73c3ff;
+      --violet: #8d7cff;
+      --gold: #ffb85c;
+      --shadow: 0 28px 70px rgba(0, 0, 0, 0.45);
     }
 
     * {
@@ -26,46 +29,92 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: Georgia, "Times New Roman", serif;
       color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
       background:
-        radial-gradient(circle at top left, rgba(189, 79, 47, 0.18), transparent 28%),
-        linear-gradient(180deg, #f7f1e6 0%, var(--bg) 58%, #efe6d8 100%);
+        radial-gradient(circle at 15% 12%, rgba(141, 124, 255, 0.18), transparent 24%),
+        radial-gradient(circle at 82% 22%, rgba(115, 195, 255, 0.15), transparent 22%),
+        linear-gradient(180deg, #02030a 0%, var(--bg) 46%, #080a14 100%);
     }
 
     a {
       color: inherit;
     }
 
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
     .page {
-      width: min(820px, calc(100% - 2rem));
+      width: min(920px, calc(100% - 2rem));
       margin: 0 auto;
-      padding: 2rem 0 4rem;
+      padding: 1.25rem 0 4rem;
     }
 
     .site-nav {
       display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-      margin-bottom: 1rem;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 0;
     }
 
     .site-nav a {
       text-decoration: none;
+    }
+
+    .brand {
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #d7defd;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
       color: var(--muted);
     }
 
-    .site-nav a:hover,
-    .site-nav a:focus-visible {
-      color: var(--accent);
+    .shell {
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      overflow: hidden;
+      background: var(--panel);
+      box-shadow: var(--shadow);
     }
 
-    .article-shell {
-      padding: 2rem;
-      border-radius: 28px;
-      background: var(--paper);
-      border: 1px solid rgba(255, 255, 255, 0.55);
-      box-shadow: var(--shadow);
+    .cover {
+      position: relative;
+      min-height: 320px;
+      background: #080b16;
+    }
+
+    .cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .cover-overlay {
+      position: absolute;
+      inset: auto 0 0 0;
+      padding: 1.5rem;
+      background: linear-gradient(180deg, transparent, rgba(3, 4, 12, 0.88));
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 0.75rem;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      border: 1px solid rgba(115, 195, 255, 0.25);
+      background: rgba(115, 195, 255, 0.08);
+      color: #c9e5ff;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
     }
 
     h1,
@@ -74,51 +123,80 @@
       margin: 0;
     }
 
-    header time {
-      display: inline-block;
-      margin-bottom: 0.8rem;
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-size: 0.84rem;
-    }
-
     h1 {
-      font-size: clamp(2.4rem, 6vw, 4.4rem);
-      line-height: 0.95;
-      letter-spacing: -0.05em;
+      max-width: 12ch;
+      font-size: clamp(2.8rem, 6.5vw, 5rem);
+      line-height: 0.92;
+      letter-spacing: -0.06em;
     }
 
-    .dek {
-      margin-top: 1rem;
-      color: var(--muted);
-      font-size: 1.08rem;
-      line-height: 1.7;
+    .article-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+      margin-top: 0.9rem;
+      color: #d5defe;
+      font-size: 0.92rem;
     }
 
-    .content {
-      margin-top: 2rem;
+    .article-body {
       display: grid;
-      gap: 1.2rem;
+      gap: 1.6rem;
+      padding: 2rem;
     }
 
-    .content p {
-      line-height: 1.8;
-      color: #36372f;
+    .standfirst {
+      color: var(--muted);
+      font-size: 1.12rem;
+      line-height: 1.75;
     }
 
     .callout {
-      padding: 1rem 1.1rem;
-      border-left: 4px solid var(--accent);
-      background: rgba(255, 255, 255, 0.62);
-      border-radius: 14px;
+      padding: 1.1rem 1.15rem;
+      border-left: 3px solid var(--gold);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #fff1d7;
+      line-height: 1.7;
+    }
+
+    .article-body p {
+      color: #dce3ff;
+      line-height: 1.9;
+      font-size: 1.04rem;
+    }
+
+    .section {
+      display: grid;
+      gap: 0.9rem;
+    }
+
+    .section h2 {
+      font-size: 1.45rem;
+      color: #ffffff;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      padding-top: 0.4rem;
+    }
+
+    .tag {
+      padding: 0.45rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #d5defe;
+      font-size: 0.88rem;
     }
 
     .back-link {
       display: inline-flex;
-      margin-top: 2rem;
+      margin-top: 0.3rem;
+      color: var(--blue);
       text-decoration: none;
-      color: var(--accent);
     }
 
     .back-link:hover,
@@ -127,8 +205,17 @@
     }
 
     @media (max-width: 640px) {
-      .article-shell {
-        padding: 1.4rem;
+      .site-nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .article-body {
+        padding: 1.2rem;
+      }
+
+      h1 {
+        max-width: none;
       }
     }
   </style>
@@ -136,45 +223,132 @@
 <body>
   <main class="page">
     <nav class="site-nav" aria-label="Primary">
-      <a href="/">Home</a>
-      <a href="/posts/first-post.html">First post</a>
+      <a class="brand" href="/">erranthex</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/posts/first-post.html">Latest Article</a>
+      </div>
     </nav>
 
-    <article class="article-shell">
-      <header>
-        <time datetime="2026-03-15">March 15, 2026</time>
-        <h1>Launching the blog</h1>
-        <p class="dek">
-          This sample post gives you a template for writing on your new GitHub Pages site.
-        </p>
+    <article class="shell">
+      <header class="cover">
+        <img
+          src="/assets/images/openclaw-ai-agent-cover.jpeg"
+          alt="Raise Your AI Agent OpenClaw illustration"
+        >
+        <div class="cover-overlay">
+          <span class="eyebrow">AI Systems / OpenClaw</span>
+          <h1>From Digital Pet to Digital Operator</h1>
+          <div class="article-meta">
+            <span>Francesco Laurito</span>
+            <span>March 15, 2026</span>
+            <span>7 min read</span>
+          </div>
+        </div>
       </header>
 
-      <section class="content">
-        <p>
-          A first blog post does not need to be ambitious. It needs to establish
-          voice, scope, and enough specificity that the site feels alive instead
-          of abandoned.
+      <section class="article-body">
+        <p class="standfirst">
+          A Tamagotchi-style AI agent that evolves with you and is being shaped
+          to help in the real world through memory, proactivity, security, and
+          coordinated execution.
         </p>
-        <p>
-          On a practical level, a simple GitHub Pages blog can stay lightweight:
-          one homepage, one directory for posts, and plain HTML files for each
-          article. That keeps the publishing model obvious while you decide
-          whether you want templates or a generator later.
-        </p>
-        <div class="callout">
-          <p>
-            Replace this text with something personal: what you are building,
-            what you are learning, or what problem keeps returning to your notes.
-          </p>
-        </div>
-        <p>
-          Once you have two or three real posts, the homepage can evolve from a
-          placeholder into a proper archive with summaries, categories, or a
-          short introduction to your recent work.
-        </p>
-      </section>
 
-      <a class="back-link" href="/">Back to homepage</a>
+        <div class="callout">
+          Remember raising Tamagotchis? Now imagine raising an AI agent that
+          actually clears your inbox and coordinates your workflow. This is how
+          I am thinking about shaping OpenClaw into a personalized digital
+          operator that remembers, adapts, and protects context.
+        </div>
+
+        <section class="section">
+          <h2>Why OpenClaw caught my attention</h2>
+          <p>
+            We grew up feeding digital pets. Now imagine raising an AI agent
+            that does more than live on a screen. That idea is what drew me to
+            OpenClaw.
+          </p>
+          <p>
+            I did not create OpenClaw; it is an open-source project. What I am
+            doing is unpacking it, understanding how it works, and shaping it
+            into something more personal: a Tamagotchi AI personal agent with
+            stronger memory, clearer personality, better architecture, safer
+            backups, and more proactive behavior.
+          </p>
+        </section>
+
+        <section class="section">
+          <h2>Teaching the agent to improve itself</h2>
+          <p>
+            A big part of this experiment is teaching the agent to participate in
+            its own improvement. I have been prompting OpenClaw to identify weak
+            points, suggest upgrades, expand its capabilities, and become more
+            proactive instead of waiting for every instruction.
+          </p>
+          <p>
+            I am also pushing it to harden its security surface, especially
+            against prompt injection and other ways an AI can be manipulated off
+            course. If a personal agent is going to carry context and act with
+            more autonomy, its defenses need to evolve with its capabilities.
+          </p>
+        </section>
+
+        <section class="section">
+          <h2>Mission Control instead of a single assistant</h2>
+          <p>
+            To support that evolution, I am designing a Mission Control system
+            to organize the work. The vision is a team of specialized agents
+            collaborating in a scrum-style workflow, sharing a backlog,
+            surfacing updates, and helping move priorities forward instead of
+            relying on a single assistant to do everything.
+          </p>
+          <p>
+            That model matters because it shifts the system away from isolated
+            chat interactions and toward coordinated execution. The point is not
+            to make the agent feel magical; the point is to make it operational.
+          </p>
+        </section>
+
+        <section class="section">
+          <h2>From disposable assistant to personal operator</h2>
+          <p>
+            That is the real shift for me: I do not want an AI that forgets
+            everything and starts from zero. I want one that remembers context,
+            adapts to how I work, protects what matters, and becomes more useful
+            over time.
+          </p>
+          <p>
+            I even gave it a public-facing identity online, because once an AI
+            has memory, personality, and a visible presence, it starts to feel
+            less like software and more like something you actively shape.
+          </p>
+        </section>
+
+        <section class="section">
+          <h2>What open-source AI makes possible</h2>
+          <p>
+            To me, that is the promise of open-source AI. You do not need to
+            build everything from scratch to create something original; you can
+            start with a shared foundation and turn it into a system that
+            reflects your goals, workflows, and standards.
+          </p>
+          <p>
+            I think that is where AI is heading next: not just toward smarter
+            assistants, but toward AI personal agents we raise, refine, and
+            eventually trust to help us operate in the real world.
+          </p>
+        </section>
+
+        <div class="tags" aria-label="Tags">
+          <span class="tag">#AIAgents</span>
+          <span class="tag">#OpenSourceAI</span>
+          <span class="tag">#OpenClaw</span>
+          <span class="tag">#ArtificialIntelligence</span>
+          <span class="tag">#erranthex</span>
+        </div>
+
+        <a class="back-link" href="/">Back to homepage</a>
+      </section>
     </article>
   </main>
 </body>
