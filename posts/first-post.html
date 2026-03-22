@@ -204,6 +204,30 @@
       text-decoration: underline;
     }
 
+    .article-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+      padding-top: 0.4rem;
+    }
+
+    .nav-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2.8rem;
+      padding: 0.7rem 1rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+      color: #dce3ff;
+      text-decoration: none;
+    }
+
+    .nav-pill:hover,
+    .nav-pill:focus-visible {
+      text-decoration: underline;
+    }
+
     @media (max-width: 640px) {
       .site-nav {
         flex-direction: column;
@@ -226,7 +250,7 @@
       <a class="brand" href="/">erranthex</a>
       <div class="nav-links">
         <a href="/">Home</a>
-        <a href="/posts/coordinated-autonomy-unified-workforce.html">Latest Article</a>
+        <a href="/#articles">Articles</a>
       </div>
     </nav>
 
@@ -347,7 +371,10 @@
           <span class="tag">#erranthex</span>
         </div>
 
-        <a class="back-link" href="/">Back to homepage</a>
+        <nav class="article-nav" aria-label="Article navigation">
+          <a class="nav-pill" href="/">Back to homepage</a>
+          <a class="nav-pill" href="/posts/coordinated-autonomy-unified-workforce.html">Next article</a>
+        </nav>
       </section>
     </article>
   </main>
