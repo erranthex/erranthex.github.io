@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Systems | erranthex</title>
+  <meta
+    name="description"
+    content="Articles on AI agents, LLM workflows, memory, orchestration, model behavior, evaluation, and practical system design."
+  >
+  <style>
+    :root {
+      --bg: #060816;
+      --panel: rgba(12, 16, 34, 0.82);
+      --panel-strong: rgba(18, 23, 46, 0.95);
+      --ink: #f3f5ff;
+      --muted: #a6b2d9;
+      --line: rgba(152, 171, 255, 0.18);
+      --blue: #73c3ff;
+      --violet: #8d7cff;
+      --gold: #ffb85c;
+      --shadow: 0 28px 70px rgba(0, 0, 0, 0.42);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(circle at top left, rgba(115, 195, 255, 0.18), transparent 26%),
+        radial-gradient(circle at 85% 15%, rgba(141, 124, 255, 0.15), transparent 22%),
+        linear-gradient(180deg, #03040c 0%, var(--bg) 45%, #090b16 100%);
+    }
+
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+
+    .page {
+      width: min(1180px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 1.25rem 0 4rem;
+    }
+
+    /* ── NAV ─────────────────────────────────────── */
+    .site-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 0;
+    }
+
+    .brand {
+      font-size: 1rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: #d7defd;
+      transition: color 180ms ease;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      transition: color 180ms ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a:focus-visible,
+    .brand:hover,
+    .brand:focus-visible {
+      color: #ffffff;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    /* ── TOPIC HEADER ────────────────────────────── */
+    .topic-header {
+      padding: 2rem;
+      border: 1px solid var(--line);
+      border-radius: 32px;
+      background: linear-gradient(140deg, rgba(18, 23, 46, 0.98), rgba(9, 11, 22, 0.92));
+      box-shadow: var(--shadow);
+      margin-bottom: 1.25rem;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--muted);
+      font-size: 0.875rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .breadcrumb a {
+      text-decoration: none;
+      transition: color 180ms ease;
+    }
+
+    .breadcrumb a:hover { color: var(--ink); }
+
+    .breadcrumb-sep {
+      opacity: 0.4;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2rem;
+      padding: 0.35rem 0.8rem;
+      border: 1px solid rgba(115, 195, 255, 0.24);
+      border-radius: 999px;
+      background: rgba(115, 195, 255, 0.08);
+      color: #cae6ff;
+      font-size: 0.76rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 0.9rem;
+    }
+
+    .topic-header h1 {
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+      margin-bottom: 0.9rem;
+    }
+
+    .topic-header p {
+      color: var(--muted);
+      font-size: 1.06rem;
+      line-height: 1.75;
+      max-width: 60ch;
+    }
+
+    /* ── ARTICLES ────────────────────────────────── */
+    .panel {
+      padding: 1.5rem;
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      background: var(--panel);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+    }
+
+    .panel h2 {
+      font-size: 1.4rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .panel-copy { color: var(--muted); line-height: 1.7; }
+
+    .articles-list {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1.25rem;
+    }
+
+    .article-card {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 1rem;
+      padding: 1rem;
+      border-radius: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .article-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(115, 195, 255, 0.2);
+      background: rgba(115, 195, 255, 0.04);
+    }
+
+    .article-card img {
+      width: 100%;
+      height: 100%;
+      max-height: 150px;
+      object-fit: cover;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .article-card h3 {
+      font-size: 1.15rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .article-card a { text-decoration: none; }
+    .article-card a:hover,
+    .article-card a:focus-visible { text-decoration: underline; }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.55rem;
+      margin: 0 0 0.7rem;
+      color: #d4dcff;
+      font-size: 0.88rem;
+    }
+
+    .topic-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(115, 195, 255, 0.22);
+      background: rgba(115, 195, 255, 0.07);
+      color: #a8d8ff;
+      font-size: 0.78rem;
+      text-decoration: none;
+      transition: all 180ms ease;
+    }
+
+    .topic-badge:hover {
+      border-color: rgba(115, 195, 255, 0.45);
+      background: rgba(115, 195, 255, 0.14);
+      color: var(--blue);
+    }
+
+    /* ── FOOTER ──────────────────────────────────── */
+    footer {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 180ms ease;
+    }
+
+    .footer-links a:hover { color: var(--ink); }
+
+    /* ── RESPONSIVE ──────────────────────────────── */
+    @media (max-width: 900px) {
+      .article-card { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .page { width: min(100% - 1rem, 1180px); }
+      .topic-header { padding: 1.2rem; }
+      .panel { padding: 1.2rem; }
+      .site-nav { flex-direction: column; align-items: flex-start; }
+      footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="site-nav" aria-label="Primary">
+      <a class="brand" href="/">erranthex</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/#articles">Articles</a>
+        <a href="/#topics">Topics</a>
+      </div>
+    </nav>
+
+    <header class="topic-header">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span class="breadcrumb-sep">/</span>
+        <a href="/#topics">Topics</a>
+        <span class="breadcrumb-sep">/</span>
+        <span>AI Systems</span>
+      </nav>
+      <div class="eyebrow">Topic</div>
+      <h1>AI Systems</h1>
+      <p>
+        AI agents, LLM workflows, memory, orchestration, model behavior,
+        evaluation, and practical system design.
+      </p>
+    </header>
+
+    <section class="panel">
+      <h2>2 articles</h2>
+      <div class="articles-list">
+        <article class="article-card">
+          <img
+            src="/assets/images/coordinated-autonomy-unified-workforce-cover.jpeg"
+            alt="Cover image for coordinated autonomy article"
+          >
+          <div>
+            <div class="meta">
+              <span>March 22, 2026</span>
+              <a class="topic-badge" href="/topics/ai-systems.html">AI Systems</a>
+              <a class="topic-badge" href="/topics/openclaw.html">OpenClaw</a>
+            </div>
+            <h3>
+              <a href="/posts/coordinated-autonomy-unified-workforce.html">
+                The Future of Coordinated Autonomy for a Unified Workforce
+              </a>
+            </h3>
+            <p class="panel-copy">
+              OpenClaw AI agents orchestration and mission control platform.
+            </p>
+          </div>
+        </article>
+
+        <article class="article-card">
+          <img
+            src="/assets/images/openclaw-ai-agent-cover.jpeg"
+            alt="Cover image for digital operator article"
+          >
+          <div>
+            <div class="meta">
+              <span>March 15, 2026</span>
+              <a class="topic-badge" href="/topics/ai-systems.html">AI Systems</a>
+              <a class="topic-badge" href="/topics/openclaw.html">OpenClaw</a>
+            </div>
+            <h3>
+              <a href="/posts/first-post.html">
+                From Digital Pet to Digital Operator
+              </a>
+            </h3>
+            <p class="panel-copy">
+              Shaping OpenClaw into a Tamagotchi AI personal agent with
+              memory, proactivity, security, and coordinated execution.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <span>erranthex &mdash; technical essays, writeups, and field notes.</span>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="/#articles">Articles</a>
+        <a href="/#topics">Topics</a>
+        <a href="https://github.com/erranthex" target="_blank" rel="noreferrer">GitHub</a>
+      </nav>
+    </footer>
+  </main>
+</body>
+</html>

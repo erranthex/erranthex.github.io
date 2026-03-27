@@ -58,6 +58,7 @@
       padding: 1.25rem 0 4rem;
     }
 
+    /* ── NAV ─────────────────────────────────────── */
     .site-nav {
       display: flex;
       align-items: center;
@@ -72,6 +73,7 @@
       text-transform: uppercase;
       text-decoration: none;
       color: #d7defd;
+      transition: color 180ms ease;
     }
 
     .nav-links {
@@ -83,6 +85,7 @@
     .nav-links a {
       text-decoration: none;
       color: var(--muted);
+      transition: color 180ms ease;
     }
 
     .nav-links a:hover,
@@ -92,6 +95,7 @@
       color: #ffffff;
     }
 
+    /* ── HERO ────────────────────────────────────── */
     .hero {
       position: relative;
       overflow: hidden;
@@ -181,23 +185,33 @@
       padding: 0.8rem 1.2rem;
       border-radius: 999px;
       text-decoration: none;
-      transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease;
+      transition: transform 180ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
     }
 
     .button:hover,
     .button:focus-visible {
-      transform: translateY(-1px);
+      transform: translateY(-2px);
     }
 
     .button.primary {
       background: linear-gradient(135deg, #7a69ff, #4aaeff);
       color: #ffffff;
+      box-shadow: 0 4px 20px rgba(122, 105, 255, 0.3);
+    }
+
+    .button.primary:hover {
+      box-shadow: 0 8px 28px rgba(122, 105, 255, 0.45);
     }
 
     .button.secondary {
       border: 1px solid var(--line);
       background: rgba(255, 255, 255, 0.04);
       color: #d7defd;
+    }
+
+    .button.secondary:hover {
+      border-color: rgba(115, 195, 255, 0.3);
+      background: rgba(115, 195, 255, 0.06);
     }
 
     .hero-visual {
@@ -241,6 +255,7 @@
       font-size: 0.95rem;
     }
 
+    /* ── CONTENT GRID ────────────────────────────── */
     .content-grid {
       display: grid;
       grid-template-columns: 1.05fr 0.95fr;
@@ -267,23 +282,49 @@
       line-height: 1.7;
     }
 
+    /* ── FILTER ──────────────────────────────────── */
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin: 1rem 0 0.5rem;
+    }
+
+    .filter-btn {
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 180ms ease;
+    }
+
+    .filter-btn:hover {
+      border-color: rgba(115, 195, 255, 0.3);
+      color: var(--blue);
+      background: rgba(115, 195, 255, 0.06);
+    }
+
+    .filter-btn.active {
+      background: rgba(115, 195, 255, 0.12);
+      border-color: rgba(115, 195, 255, 0.4);
+      color: var(--blue);
+    }
+
+    .no-results {
+      display: none;
+      color: var(--muted);
+      font-style: italic;
+      padding: 0.75rem 0;
+    }
+
+    /* ── ARTICLES ────────────────────────────────── */
     .feature-card {
       display: grid;
       gap: 1rem;
-    }
-
-    .feature-card img {
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-top: 0.9rem;
-      color: #d4dcff;
-      font-size: 0.9rem;
     }
 
     .articles-list {
@@ -299,6 +340,13 @@
       border-radius: 22px;
       border: 1px solid rgba(255, 255, 255, 0.08);
       background: rgba(255, 255, 255, 0.04);
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .article-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(115, 195, 255, 0.2);
+      background: rgba(115, 195, 255, 0.04);
     }
 
     .article-card img {
@@ -324,10 +372,36 @@
       text-decoration: underline;
     }
 
-    .article-card .meta {
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.55rem;
       margin: 0 0 0.7rem;
+      color: #d4dcff;
+      font-size: 0.88rem;
     }
 
+    .topic-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(115, 195, 255, 0.22);
+      background: rgba(115, 195, 255, 0.07);
+      color: #a8d8ff;
+      font-size: 0.78rem;
+      text-decoration: none;
+      transition: all 180ms ease;
+    }
+
+    .topic-badge:hover {
+      border-color: rgba(115, 195, 255, 0.45);
+      background: rgba(115, 195, 255, 0.14);
+      color: var(--blue);
+    }
+
+    /* ── TOPICS SIDEBAR ──────────────────────────── */
     .topics {
       display: grid;
       gap: 0.9rem;
@@ -335,15 +409,28 @@
     }
 
     .topic {
+      display: block;
       padding: 1rem 1.05rem;
       border-radius: 18px;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.08);
+      text-decoration: none;
+      color: inherit;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .topic:hover {
+      transform: translateY(-2px);
+      border-color: rgba(141, 124, 255, 0.3);
+      background: rgba(141, 124, 255, 0.06);
     }
 
     .topic h3 {
       font-size: 1.05rem;
       margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     .topic p {
@@ -351,13 +438,45 @@
       line-height: 1.65;
     }
 
-    footer {
-      margin-top: 1.5rem;
-      text-align: center;
+    .topic-count {
+      padding: 0.1rem 0.55rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
       color: var(--muted);
-      font-size: 0.95rem;
+      font-size: 0.75rem;
+      font-weight: normal;
     }
 
+    /* ── FOOTER ──────────────────────────────────── */
+    footer {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 180ms ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--ink);
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────── */
     @media (max-width: 900px) {
       .hero,
       .content-grid {
@@ -386,6 +505,11 @@
       .site-nav {
         align-items: flex-start;
         flex-direction: column;
+      }
+
+      footer {
+        flex-direction: column;
+        align-items: flex-start;
       }
     }
   </style>
@@ -441,13 +565,19 @@
         <div>
           <h2>Recent Articles</h2>
           <p class="panel-copy">
-            The homepage now keeps published articles visible so older pieces
-            do not disappear after a new one goes live.
+            All published articles stay visible. Filter by topic to narrow the list.
           </p>
         </div>
 
-        <div class="articles-list">
-          <article class="article-card">
+        <div class="filter-row" role="group" aria-label="Filter articles by topic">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="ai-systems">AI Systems</button>
+          <button class="filter-btn" data-filter="openclaw">OpenClaw</button>
+          <button class="filter-btn" data-filter="cybersecurity">Cybersecurity</button>
+        </div>
+
+        <div class="articles-list" id="articles-list">
+          <article class="article-card" data-topics="ai-systems openclaw">
             <img
               src="/assets/images/coordinated-autonomy-unified-workforce-cover.jpeg"
               alt="Cover image for coordinated autonomy article"
@@ -455,8 +585,8 @@
             <div>
               <div class="meta">
                 <span>March 22, 2026</span>
-                <span>AI Systems</span>
-                <span>OpenClaw</span>
+                <a class="topic-badge" href="/topics/ai-systems.html">AI Systems</a>
+                <a class="topic-badge" href="/topics/openclaw.html">OpenClaw</a>
               </div>
               <h3>
                 <a href="/posts/coordinated-autonomy-unified-workforce.html">
@@ -469,7 +599,7 @@
             </div>
           </article>
 
-          <article class="article-card">
+          <article class="article-card" data-topics="ai-systems openclaw">
             <img
               src="/assets/images/openclaw-ai-agent-cover.jpeg"
               alt="Cover image for digital operator article"
@@ -477,8 +607,8 @@
             <div>
               <div class="meta">
                 <span>March 15, 2026</span>
-                <span>AI Systems</span>
-                <span>OpenClaw</span>
+                <a class="topic-badge" href="/topics/ai-systems.html">AI Systems</a>
+                <a class="topic-badge" href="/topics/openclaw.html">OpenClaw</a>
               </div>
               <h3>
                 <a href="/posts/first-post.html">
@@ -492,6 +622,8 @@
             </div>
           </article>
         </div>
+
+        <p class="no-results" id="no-results">No articles in this topic yet.</p>
       </section>
 
       <aside class="panel" id="topics">
@@ -501,34 +633,60 @@
           capture the work around it.
         </p>
         <div class="topics">
-          <section class="topic">
-            <h3>AI Systems</h3>
+          <a class="topic" href="/topics/ai-systems.html">
+            <h3>AI Systems <span class="topic-count">2</span></h3>
             <p>
               AI agents, LLM workflows, memory, orchestration, model behavior,
               evaluation, and practical system design.
             </p>
-          </section>
-          <section class="topic">
-            <h3>OpenClaw</h3>
+          </a>
+          <a class="topic" href="/topics/openclaw.html">
+            <h3>OpenClaw <span class="topic-count">2</span></h3>
             <p>
               Notes on shaping an open-source agent into something more personal,
               proactive, and operationally useful.
             </p>
-          </section>
-          <section class="topic">
-            <h3>Cybersecurity</h3>
+          </a>
+          <a class="topic" href="/topics/cybersecurity.html">
+            <h3>Cybersecurity <span class="topic-count">0</span></h3>
             <p>
               CTF writeups, TryHackMe and Hack The Box notes, security thinking,
               and the overlap between offensive practice and AI tooling.
             </p>
-          </section>
+          </a>
         </div>
       </aside>
     </section>
 
     <footer>
-      erranthex is my personal blog for technical essays, writeups, and field notes.
+      <span>erranthex &mdash; technical essays, writeups, and field notes.</span>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="#articles">Articles</a>
+        <a href="#topics">Topics</a>
+        <a href="https://github.com/erranthex" target="_blank" rel="noreferrer">GitHub</a>
+      </nav>
     </footer>
   </main>
+
+  <script>
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.article-card[data-topics]');
+    const noResults = document.getElementById('no-results');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        let visible = 0;
+        cards.forEach(card => {
+          const show = filter === 'all' || card.dataset.topics.split(' ').includes(filter);
+          card.style.display = show ? '' : 'none';
+          if (show) visible++;
+        });
+        noResults.style.display = visible === 0 ? 'block' : 'none';
+      });
+    });
+  </script>
 </body>
 </html>
