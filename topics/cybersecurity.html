@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cybersecurity | erranthex</title>
+  <meta
+    name="description"
+    content="CTF writeups, TryHackMe and Hack The Box notes, security thinking, and the overlap between offensive practice and AI tooling."
+  >
+  <link rel="canonical" href="https://erranthex.github.io/topics/cybersecurity.html">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="erranthex">
+  <meta property="og:title" content="Cybersecurity | erranthex">
+  <meta property="og:description" content="CTF writeups, TryHackMe and Hack The Box notes, security thinking, and the overlap between offensive practice and AI tooling.">
+  <meta property="og:url" content="https://erranthex.github.io/topics/cybersecurity.html">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Cybersecurity | erranthex">
+  <meta name="twitter:description" content="CTF writeups, TryHackMe and Hack The Box notes, security thinking, and the overlap between offensive practice and AI tooling.">
+
+  <style>
+    :root {
+      --bg: #060816;
+      --panel: rgba(12, 16, 34, 0.82);
+      --ink: #f3f5ff;
+      --muted: #a6b2d9;
+      --line: rgba(152, 171, 255, 0.18);
+      --blue: #73c3ff;
+      --violet: #8d7cff;
+      --gold: #ffb85c;
+      --shadow: 0 28px 70px rgba(0, 0, 0, 0.42);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 184, 92, 0.14), transparent 26%),
+        radial-gradient(circle at 82% 18%, rgba(115, 195, 255, 0.12), transparent 22%),
+        linear-gradient(180deg, #03040c 0%, var(--bg) 45%, #090b16 100%);
+    }
+
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+
+    .page {
+      width: min(1180px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 1.25rem 0 4rem;
+    }
+
+    /* ── NAV ─────────────────────────────────────── */
+    .site-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 0;
+    }
+
+    .brand {
+      font-size: 1rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: #d7defd;
+      transition: color 180ms ease;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      transition: color 180ms ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a:focus-visible,
+    .brand:hover,
+    .brand:focus-visible {
+      color: #ffffff;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    /* ── TOPIC HEADER ────────────────────────────── */
+    .topic-header {
+      padding: 2rem;
+      border: 1px solid var(--line);
+      border-radius: 32px;
+      background: linear-gradient(140deg, rgba(18, 23, 46, 0.98), rgba(9, 11, 22, 0.92));
+      box-shadow: var(--shadow);
+      margin-bottom: 1.25rem;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--muted);
+      font-size: 0.875rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .breadcrumb a {
+      text-decoration: none;
+      transition: color 180ms ease;
+    }
+
+    .breadcrumb a:hover { color: var(--ink); }
+    .breadcrumb-sep { opacity: 0.4; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2rem;
+      padding: 0.35rem 0.8rem;
+      border: 1px solid rgba(255, 184, 92, 0.28);
+      border-radius: 999px;
+      background: rgba(255, 184, 92, 0.08);
+      color: #ffe1ad;
+      font-size: 0.76rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 0.9rem;
+    }
+
+    .topic-header h1 {
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+      margin-bottom: 0.9rem;
+    }
+
+    .topic-header p {
+      color: var(--muted);
+      font-size: 1.06rem;
+      line-height: 1.75;
+      max-width: 60ch;
+    }
+
+    /* ── EMPTY STATE ─────────────────────────────── */
+    .panel {
+      padding: 1.5rem;
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      background: var(--panel);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+    }
+
+    .panel h2 {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .empty-state {
+      padding: 2.5rem 1rem;
+      text-align: center;
+      border-radius: 18px;
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.02);
+      margin-top: 1.25rem;
+    }
+
+    .empty-state p {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .empty-state .hint {
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 1.5rem;
+      padding: 0.7rem 1.2rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--blue);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: all 180ms ease;
+    }
+
+    .back-link:hover {
+      border-color: rgba(115, 195, 255, 0.3);
+      background: rgba(115, 195, 255, 0.06);
+    }
+
+    /* ── FOOTER ──────────────────────────────────── */
+    footer {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 180ms ease;
+    }
+
+    .footer-links a:hover { color: var(--ink); }
+
+    /* ── RESPONSIVE ──────────────────────────────── */
+    @media (max-width: 640px) {
+      .page { width: min(100% - 1rem, 1180px); }
+      .topic-header, .panel { padding: 1.2rem; }
+      .site-nav { flex-direction: column; align-items: flex-start; }
+      footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="site-nav" aria-label="Primary">
+      <a class="brand" href="/">erranthex</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/#articles">Articles</a>
+        <a href="/#topics">Topics</a>
+      </div>
+    </nav>
+
+    <header class="topic-header">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span class="breadcrumb-sep">/</span>
+        <a href="/#topics">Topics</a>
+        <span class="breadcrumb-sep">/</span>
+        <span>Cybersecurity</span>
+      </nav>
+      <div class="eyebrow">Topic</div>
+      <h1>Cybersecurity</h1>
+      <p>
+        CTF writeups, TryHackMe and Hack The Box notes, security thinking,
+        and the overlap between offensive practice and AI tooling.
+      </p>
+    </header>
+
+    <section class="panel">
+      <h2>0 articles</h2>
+      <div class="empty-state">
+        <p>No articles published yet in this topic.</p>
+        <p class="hint">CTF writeups, platform notes, and security essays are in the pipeline.</p>
+        <a class="back-link" href="/">Back to homepage</a>
+      </div>
+    </section>
+
+    <footer>
+      <span>erranthex &mdash; technical essays, writeups, and field notes.</span>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="/#articles">Articles</a>
+        <a href="/#topics">Topics</a>
+        <a href="https://github.com/erranthex" target="_blank" rel="noreferrer">GitHub</a>
+      </nav>
+    </footer>
+  </main>
+</body>
+</html>
