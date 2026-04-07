@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Agent on a Kali Linux Phone: A Red Team Field Companion | erranthex</title>
+  <meta
+    name="description"
+    content="Running an AI agent on a Kali NetHunter phone for portable, autonomous red team operations — from Wi-Fi assessment to multi-agent coordination."
+  >
+  <meta name="author" content="Francesco Laurito">
+  <link rel="canonical" href="https://erranthex.github.io/posts/ai-agent-kali-linux-phone.html">
+
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="erranthex">
+  <meta property="og:title" content="AI Agent on a Kali Linux Phone: A Red Team Field Companion | erranthex">
+  <meta property="og:description" content="Running an AI agent on a Kali NetHunter phone for portable, autonomous red team operations — from Wi-Fi assessment to multi-agent coordination.">
+  <meta property="og:url" content="https://erranthex.github.io/posts/ai-agent-kali-linux-phone.html">
+  <meta property="og:image" content="https://erranthex.github.io/assets/images/AIAgentKaliLinuxPhone.png">
+  <meta property="article:published_time" content="2026-04-06">
+  <meta property="article:author" content="Francesco Laurito">
+  <meta property="article:tag" content="Cybersecurity">
+  <meta property="article:tag" content="AI Systems">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="AI Agent on a Kali Linux Phone: A Red Team Field Companion | erranthex">
+  <meta name="twitter:description" content="Running an AI agent on a Kali NetHunter phone for portable, autonomous red team operations — from Wi-Fi assessment to multi-agent coordination.">
+  <meta name="twitter:image" content="https://erranthex.github.io/assets/images/AIAgentKaliLinuxPhone.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "AI Agent on a Kali Linux Phone: A Red Team Field Companion",
+    "description": "Running an AI agent on a Kali NetHunter phone for portable, autonomous red team operations — from Wi-Fi assessment to multi-agent coordination.",
+    "url": "https://erranthex.github.io/posts/ai-agent-kali-linux-phone.html",
+    "datePublished": "2026-04-06",
+    "image": "https://erranthex.github.io/assets/images/AIAgentKaliLinuxPhone.png",
+    "author": {
+      "@type": "Person",
+      "name": "Francesco Laurito"
+    },
+    "publisher": {
+      "@type": "Blog",
+      "name": "erranthex",
+      "url": "https://erranthex.github.io/"
+    },
+    "keywords": ["Kali Linux", "red teaming", "AI agents", "cybersecurity", "pentesting", "offensive security", "Hermes agent"]
+  }
+  </script>
+
+  <style>
+    :root {
+      --bg: #050712;
+      --panel: rgba(10, 14, 30, 0.9);
+      --ink: #f3f6ff;
+      --muted: #a8b4da;
+      --line: rgba(152, 171, 255, 0.16);
+      --blue: #73c3ff;
+      --gold: #ffb85c;
+      --shadow: 0 28px 70px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(circle at 15% 12%, rgba(141, 124, 255, 0.18), transparent 24%),
+        radial-gradient(circle at 82% 22%, rgba(115, 195, 255, 0.15), transparent 22%),
+        linear-gradient(180deg, #02030a 0%, var(--bg) 46%, #080a14 100%);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    .page {
+      width: min(920px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 1.25rem 0 4rem;
+    }
+
+    .site-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 0;
+    }
+
+    .site-nav a {
+      text-decoration: none;
+    }
+
+    .brand {
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #d7defd;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      color: var(--muted);
+    }
+
+    .shell {
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      overflow: hidden;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .cover {
+      position: relative;
+      min-height: 340px;
+      background: #080b16;
+    }
+
+    .cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .cover-overlay {
+      position: absolute;
+      inset: auto 0 0 0;
+      padding: 1.5rem;
+      background: linear-gradient(180deg, transparent, rgba(3, 4, 12, 0.9));
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 0.75rem;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      border: 1px solid rgba(115, 195, 255, 0.25);
+      background: rgba(115, 195, 255, 0.08);
+      color: #c9e5ff;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    h1,
+    h2,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      max-width: 20ch;
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+    }
+
+    .article-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+      margin-top: 0.9rem;
+      color: #d5defe;
+      font-size: 0.92rem;
+    }
+
+    .article-body {
+      display: grid;
+      gap: 1.6rem;
+      padding: 2rem;
+    }
+
+    .standfirst {
+      color: var(--muted);
+      font-size: 1.12rem;
+      line-height: 1.75;
+    }
+
+    .callout {
+      padding: 1.1rem 1.15rem;
+      border-left: 3px solid var(--gold);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #fff1d7;
+      line-height: 1.7;
+    }
+
+    .article-body p {
+      color: #dce3ff;
+      line-height: 1.9;
+      font-size: 1.04rem;
+    }
+
+    .section {
+      display: grid;
+      gap: 0.9rem;
+    }
+
+    .section h2 {
+      font-size: 1.45rem;
+      color: #ffffff;
+    }
+
+    .article-body a {
+      color: var(--blue);
+    }
+
+    .article-body a:hover,
+    .article-body a:focus-visible {
+      text-decoration: underline;
+    }
+
+    .article-image {
+      margin: 0.5rem 0;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .article-image img {
+      width: 100%;
+      height: auto;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      padding-top: 0.4rem;
+    }
+
+    .tag {
+      padding: 0.45rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #d5defe;
+      font-size: 0.88rem;
+    }
+
+    .back-link {
+      display: inline-flex;
+      margin-top: 0.3rem;
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    .back-link:hover,
+    .back-link:focus-visible {
+      text-decoration: underline;
+    }
+
+    .bio {
+      margin-top: 0.5rem;
+      padding: 1rem 1.15rem;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--muted);
+      font-style: italic;
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 640px) {
+      .site-nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .article-body {
+        padding: 1.2rem;
+      }
+
+      h1 {
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="site-nav" aria-label="Primary">
+      <a class="brand" href="/">erranthex</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/#articles">Articles</a>
+        <a href="/topics/cybersecurity.html">Cybersecurity</a>
+      </div>
+    </nav>
+
+    <article class="shell">
+      <header class="cover">
+        <img
+          src="/assets/images/AIAgentKaliLinuxPhone.png"
+          alt="AI Agent on a Kali Linux phone concept art"
+        >
+        <div class="cover-overlay">
+          <span class="eyebrow">Cybersecurity / AI Systems</span>
+          <h1>AI Agent on a Kali Linux Phone: A Red Team Field Companion</h1>
+          <div class="article-meta">
+            <span>Francesco Laurito</span>
+            <span>April 6, 2026</span>
+            <span>8 min read</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="article-body">
+        <p class="standfirst">
+          A few years ago, I began an experiment to see how much professional-grade
+          offensive power I could actually fit in my pocket. I wasn't looking for a
+          mobile terminal emulator or a rooted app &mdash; I wanted the full,
+          unadulterated power of Kali Linux running on bare metal.
+        </p>
+
+        <p>
+          I picked up a second-hand OnePlus 7, jailbroke it, and replaced the OS
+          with Kali NetHunter. The result: a handheld lab with over 600 specialized
+          security tools at my disposal. Even on hardware that's a few generations
+          old, the experience is remarkably fast. I set up a home lab to test the
+          limits &mdash; Wi-Fi assessments, Bluetooth experiments, USB attacks &mdash;
+          and what started as curiosity quickly became a serious capability.
+        </p>
+
+        <p>
+          But recently, the game changed. This is no longer just about portable
+          tools. It's about portable, autonomous intelligence.
+        </p>
+
+        <section class="section">
+          <h2>A New Kind of Field Companion</h2>
+
+          <div class="callout">
+            <strong>Disclaimer:</strong> Everything described in this article applies
+            to authorized security testing conducted in controlled lab environments
+            or under signed rules of engagement. Responsible disclosure and legal
+            authorization are non-negotiable prerequisites. This is professional
+            tooling for professional operators.
+          </div>
+
+          <p>
+            In a red team engagement, the most valuable assets are speed, discretion,
+            and the ability to adapt under pressure. A laptop is powerful, but
+            conspicuous. A Kali Linux phone looks like any other mobile device to a
+            casual observer &mdash; but when paired with an AI agent, it becomes
+            something far more capable.
+          </p>
+
+          <p>
+            The agent I'm running is
+            <a href="https://github.com/NousResearch/hermes-agent" target="_blank" rel="noreferrer">Hermes</a>,
+            an open-source, self-improving AI agent built by Nous Research (it has
+            some similarities to
+            <a href="https://github.com/openclaw" target="_blank" rel="noreferrer">OpenClaw</a>).
+            Unlike a typical chatbot wrapper, Hermes is a persistent agent that runs
+            continuously on your hardware, remembers what it learns across sessions,
+            and gets more capable the longer it runs. It creates reusable skills from
+            experience, searches its own past conversations via full-text search, and
+            builds a deepening model of who you are and what you're working on. You
+            can talk to it from the CLI, Telegram, Discord, Signal, or WhatsApp &mdash;
+            all from a single gateway process. It supports 200+ models via OpenRouter,
+            Nous Portal, Kimi/Moonshot, and others, with no lock-in. The model I'm
+            currently running it with is Kimi K2 by Moonshot AI.
+          </p>
+
+          <p>
+            During those high-pressure moments of a live engagement, you need to
+            think fast. Instead of manually pivoting through a network while trying
+            to stay undetected, you can brainstorm and validate attack vectors in
+            real time with the agent running alongside you. Because Hermes builds
+            procedural memory &mdash; it creates skills from completed tasks and
+            recalls context from prior sessions &mdash; it becomes more effective the
+            longer you work with it. It anticipates needs, suggests logical next
+            steps, and retains institutional knowledge that would otherwise live only
+            in your head.
+          </p>
+        </section>
+
+        <section class="section">
+          <h2>Modular Capabilities: Beyond the Touchscreen</h2>
+
+          <p>
+            Because this is bare-metal Linux, the phone supports a wide range of
+            external hardware via USB-C. Here's where the real versatility shows up:
+          </p>
+
+          <p>
+            <strong>Wi-Fi Assessment:</strong> Pair the device with a USB Wi-Fi
+            dongle capable of monitor mode (I'm using an Alfa AWUS036ACH with the
+            RTL8812AU chipset) to capture WPA handshakes. If the phone hits a
+            processing bottleneck, Hermes can help offload heavy hash-cracking tasks
+            to a cloud server you control.
+          </p>
+
+          <p>
+            <strong>Bluetooth Operations:</strong> Attach a Bluetooth dongle for
+            Man-in-the-Middle testing or targeted Denial of Service assessments
+            against BLE-enabled devices.
+          </p>
+
+          <p>
+            <strong>Bad USB Emulation:</strong> Use the phone itself as a Bad USB
+            device. Hermes can help generate and refine custom payloads on the fly
+            &mdash; plug into a target workstation and deploy a reverse shell in
+            seconds.
+          </p>
+
+          <p>
+            <strong>Physical Access Testing:</strong> Connect an RFID reader/writer
+            to clone or create custom badges, guided by the agent's knowledge base of
+            common physical security protocols and card formats.
+          </p>
+
+          <p>
+            <strong>Network Persistence:</strong> Plug in a USB-C LAN adapter to
+            interface directly with local Ethernet networks when wireless isn't
+            available or isn't the right approach.
+          </p>
+
+          <p>and more...</p>
+        </section>
+
+        <section class="section">
+          <h2>The Dark Zone: Local LLMs for Offline Operations</h2>
+
+          <p>
+            The true test of a field tool is what happens when connectivity drops. In
+            a building basement, a shielded server room, or a remote facility without
+            reliable 4G/5G &mdash; you lose the cloud brain. This is where the next
+            frontier of this project lives: local LLMs.
+          </p>
+
+          <p>
+            My next step is experimenting with running models like Gemma locally on
+            the device as a fallback.
+          </p>
+
+          <p>
+            Here's the honest reality of the hardware: on a Snapdragon 855-based
+            device like the OnePlus 7, there's no modern NPU (Neural Processing
+            Unit) to accelerate inference. Running even the smallest quantized LLMs
+            locally means roughly 5 tokens per second. That's not fast enough for
+            extended conversation, but on newer hardware it's a real capability for
+            offline scenarios &mdash; retrieving command syntax, walking through an
+            attack methodology, or brainstorming pivot strategies when you're
+            completely disconnected. It's the first step toward a truly autonomous
+            pocket lab.
+          </p>
+        </section>
+
+        <section class="section">
+          <h2>Force Multiplier: Multi-Agent Red Team Operations</h2>
+
+          <p>
+            Everything so far describes a single operator working with a single
+            agent. But the real force multiplier is what happens when that agent
+            doesn't work alone.
+          </p>
+
+          <p>
+            Both Hermes and OpenClaw support subagent delegation &mdash; the ability
+            to spawn isolated child agents that run in parallel, each with its own
+            session context and tool access. Hermes can spawn subagents for parallel
+            workstreams directly, and OpenClaw's multi-agent architecture takes this
+            further with full team orchestration: specialized agents with distinct
+            roles, shared task boards, and inter-agent communication through
+            structured message passing or shared workspaces.
+          </p>
+
+          <p>
+            In practice, this means the Hermes agent on your phone could act as a
+            field coordinator, delegating tasks to an OpenClaw agent team running on
+            remote infrastructure. Imagine an engagement where one agent handles
+            wireless reconnaissance, another focuses on credential analysis and hash
+            cracking, a third manages OSINT collection, and a fourth monitors for
+            detection signals &mdash; all running in parallel while you focus on
+            physical access. Each agent can be assigned a different model based on
+            task complexity: a lightweight model for repetitive scanning, a
+            reasoning-capable model for exploit chain planning.
+          </p>
+
+          <p>
+            This is the shift from "AI assistant" to "AI team." The phone in your
+            pocket becomes less of a workstation and more of a command console &mdash;
+            coordinating autonomous agents that split the workload, share findings
+            through a common workspace, and converge on objectives faster than any
+            single operator could manage alone. The engagement doesn't just scale
+            with better hardware; it scales with better orchestration.
+          </p>
+        </section>
+
+        <section class="section">
+          <h2>Why This Matters &mdash; For Both Sides</h2>
+
+          <p>
+            This project is a proof of concept, but the implications reach beyond my
+            home lab. If this capability exists today on a hobbyist's budget, defense
+            teams need to account for it tomorrow.
+          </p>
+
+          <p>
+            <strong>For red teamers:</strong> The combination of AI-assisted
+            reasoning and a covert form factor compresses the time between initial
+            access and meaningful lateral movement. Engagements that once required a
+            full laptop setup and careful positioning can now happen with something
+            that looks like checking your email.
+          </p>
+
+          <p>
+            <strong>For defenders:</strong> When a device that looks like a standard
+            phone can carry out multi-stage operations &mdash; Bad USB deployment,
+            RFID cloning, wireless assessment, and AI-assisted network pivoting
+            &mdash; and can coordinate a team of remote agents working in parallel,
+            the assumptions behind physical security controls need serious
+            re-evaluation. Zero trust architectures and robust identity verification
+            aren't optional anymore; they're the minimum viable defense against
+            threats that fit in a pocket.
+          </p>
+
+          <p>
+            <strong>For the industry:</strong> The barrier to entry for
+            sophisticated, AI-assisted offensive operations is dropping fast. Human
+            reaction speed is no longer the bottleneck. We're moving toward
+            edge-based attacks that can reason and adapt faster than many SOC teams
+            can respond.
+          </p>
+
+          <p>
+            We're no longer just carrying tools. We're carrying reasoning engines
+            &mdash; and they're learning to work as teams.
+          </p>
+        </section>
+
+        <div class="article-image">
+          <img
+            src="/assets/images/KaliPhoneHermes.jpeg"
+            alt="Kali NetHunter phone running Hermes AI agent with Wi-Fi adapter attached"
+          >
+        </div>
+
+        <p class="bio">
+          Fran is a cybersecurity professional specializing in offensive security,
+          AI agent systems, and hardware security tooling. All techniques described
+          are performed in authorized environments.
+        </p>
+
+        <div class="tags" aria-label="Tags">
+          <span class="tag">#KaliLinux</span>
+          <span class="tag">#RedTeaming</span>
+          <span class="tag">#AIAgents</span>
+          <span class="tag">#CyberSecurity</span>
+          <span class="tag">#Pentesting</span>
+          <span class="tag">#OffensiveSecurity</span>
+          <span class="tag">#HermesAgent</span>
+        </div>
+
+        <a class="back-link" href="/">Back to homepage</a>
+      </section>
+    </article>
+  </main>
+</body>
+</html>
