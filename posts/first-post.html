@@ -130,22 +130,17 @@
     }
 
     .cover {
-      position: relative;
-      min-height: 320px;
       background: #080b16;
     }
 
     .cover img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      height: auto;
+      display: block;
     }
 
-    .cover-overlay {
-      position: absolute;
-      inset: auto 0 0 0;
-      padding: 1.5rem;
-      background: linear-gradient(180deg, transparent, rgba(3, 4, 12, 0.88));
+    .article-header {
+      padding: 2rem;
     }
 
     .eyebrow {
@@ -168,10 +163,10 @@
     }
 
     h1 {
-      max-width: 12ch;
-      font-size: clamp(2.8rem, 6.5vw, 5rem);
-      line-height: 0.92;
-      letter-spacing: -0.06em;
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      line-height: 1.05;
+      letter-spacing: -0.05em;
+      margin-top: 0.5rem;
     }
 
     .article-meta {
@@ -350,16 +345,17 @@
           src="/assets/images/openclaw-ai-agent-cover.jpeg"
           alt="Raise Your AI Agent OpenClaw illustration"
         >
-        <div class="cover-overlay">
-          <span class="eyebrow">AI Systems / OpenClaw</span>
-          <h1>From Digital Pet to Digital Operator</h1>
-          <div class="article-meta">
-            <span>Francesco Laurito</span>
-            <span>March 15, 2026</span>
-            <span>7 min read</span>
-          </div>
-        </div>
       </header>
+
+      <section class="article-header">
+        <span class="eyebrow">AI Systems / OpenClaw</span>
+        <h1>From Digital Pet to Digital Operator</h1>
+        <div class="article-meta">
+          <span>Francesco Laurito</span>
+          <span>March 15, 2026</span>
+          <span>7 min read</span>
+        </div>
+      </section>
 
       <section class="article-body">
         <p class="standfirst">

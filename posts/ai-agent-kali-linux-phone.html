@@ -125,22 +125,17 @@
     }
 
     .cover {
-      position: relative;
-      min-height: 340px;
       background: #080b16;
     }
 
     .cover img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      height: auto;
+      display: block;
     }
 
-    .cover-overlay {
-      position: absolute;
-      inset: auto 0 0 0;
-      padding: 1.5rem;
-      background: linear-gradient(180deg, transparent, rgba(3, 4, 12, 0.9));
+    .article-header {
+      padding: 2rem;
     }
 
     .eyebrow {
@@ -163,10 +158,10 @@
     }
 
     h1 {
-      max-width: 20ch;
       font-size: clamp(2.4rem, 6vw, 4.2rem);
-      line-height: 0.95;
+      line-height: 1.05;
       letter-spacing: -0.05em;
+      margin-top: 0.5rem;
     }
 
     .article-meta {
@@ -309,16 +304,17 @@
           src="/assets/images/AIAgentKaliLinuxPhone.png"
           alt="AI Agent on a Kali Linux phone concept art"
         >
-        <div class="cover-overlay">
-          <span class="eyebrow">Cybersecurity / AI Systems</span>
-          <h1>AI Agent on a Kali Linux Phone: A Red Team Field Companion</h1>
-          <div class="article-meta">
-            <span>Francesco Laurito</span>
-            <span>April 6, 2026</span>
-            <span>8 min read</span>
-          </div>
-        </div>
       </header>
+
+      <section class="article-header">
+        <span class="eyebrow">Cybersecurity / AI Systems</span>
+        <h1>AI Agent on a Kali Linux Phone: A Red Team Field Companion</h1>
+        <div class="article-meta">
+          <span>Francesco Laurito</span>
+          <span>April 6, 2026</span>
+          <span>8 min read</span>
+        </div>
+      </section>
 
       <section class="article-body">
         <p class="standfirst">
