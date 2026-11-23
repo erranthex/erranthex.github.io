@@ -1,0 +1,106 @@
+// Evidence notes per exercise + platform-level findings. Rendered on the Science screen.
+// Evidence grades are our own summary judgement of the cited literature for FAR transfer /
+// real-world outcomes (near-transfer gains on similar tasks are reliable for all of them).
+
+export const GAME_SCIENCE = {
+  flash: {
+    inspired: 'Lumosity "Speed Match / Eagle Eye"-style peripheral games; BrainHQ "Double Decision"; the research UFOV task.',
+    researchers: 'Karlene Ball & Cynthia Owsley (UFOV, UAB); Jerri Edwards; ACTIVE trial investigators (Ball, Willis, Marsiske, Rebok, Tennstedt…); Coe et al. 2026 (20-year follow-up).',
+    how: 'A central target and a peripheral target are flashed together, then masked. Exposure time shortens with a 3-down/1-up staircase; clutter and wider eccentricity are added in later stages.',
+    why: 'Trains the speed at which you extract information from a wide visual field under divided attention. It loads attention-allocation and visual processing speed, both of which decline with age and predict driving safety.',
+    evidence: ['Strong (for older adults)', 'ACTIVE (N=2,832, RCT): speed training reduced at-fault crash rates and, with boosters, was associated with 25% lower diagnosed dementia over 20 years (40% vs 49%; Coe et al., Alzheimer\'s & Dementia: TRCI 2026). No benefit without boosters. Memory and reasoning arms did not reduce dementia.'],
+    improved: 'Frame-locked exposure (measures your screen refresh rate and shows stimuli for an exact frame count, not an unreliable setTimeout); backward pattern mask to prevent after-image cheating; one combined staircase over duration × clutter; booster reminders built into the weekly plan.',
+  },
+  echo: {
+    inspired: 'Lumosity "Memory Matrix"/n-back variants; the classic dual n-back used in research apps.',
+    researchers: 'Susanne Jaeggi, Martin Buschkuehl, John Jonides, Walter Perrig (PNAS 2008); Jacky Au et al. (meta-analysis 2015); Monica Melby-Lervåg, Thomas Redick, Charles Hulme (2016 critique).',
+    how: 'Squares light up and letters are spoken. You flag when either stream matches the item N steps back. N adapts per block by Jaeggi\'s rule (<3 errors/stream → N+1, >5 → N−1).',
+    why: 'Requires continuous updating and binding in working memory, a capacity that correlates strongly (r≈0.5–0.7) with fluid intelligence. The hope is that expanding it raises reasoning.',
+    evidence: ['Mixed / small', 'Au et al. (2015): g = 0.24 on fluid-intelligence tests across 20 studies. Reanalysis with active controls: g ≈ 0.13 to ~0 (Melby-Lervåg et al. 2016). Near transfer to other WM tasks is reliable. No convincing far transfer to school or real-world skills.'],
+    improved: 'Signal-detection scoring (d′ with log-linear correction) instead of raw hits, so pressing everything isn\'t rewarded; fixed six targets per stream per block; voice letters when available, with a visual-letter fallback for silent use; honest copy that does not promise IQ gains.',
+  },
+  grid: {
+    inspired: 'Lumosity "Memory Matrix"; Elevate memory games; the Corsi block-tapping test.',
+    researchers: 'Philip Corsi (1972); Roy Kessels et al. (standardisation, 2000); Melby-Lervåg & Hulme (2013 meta-analysis).',
+    how: 'Tiles light up in sequence; reproduce them forward, or backward on alternating rounds. Each direction has its own 2-down/1-up staircase on span length.',
+    why: 'Forward span taxes visuospatial storage; backward span adds executive manipulation. Both are core components of Baddeley\'s working-memory model.',
+    evidence: ['Moderate (near) · Weak (far)', 'Span training reliably improves span and similar WM tasks; transfer to reading, maths or intelligence is not supported in active-controlled meta-analyses (Melby-Lervåg et al. 2016).'],
+    improved: 'Separate forward/backward adaptive tracks (most apps only do forward); error replay shows the correct path for learning from mistakes.',
+  },
+  shift: {
+    inspired: 'Lumosity "Brain Shift", "Color Match"; Elevate flexibility drills.',
+    researchers: 'Robert Rogers & Stephen Monsell (1995); Julia Karbach & Jutta Kray (2009); Adele Diamond (executive functions review, 2013).',
+    how: 'A letter-number pair appears on a coloured card. The colour cues which rule to apply (odd/even vs vowel/consonant). Switches are unpredictable; the response deadline and switch probability adapt.',
+    why: 'Switching tasks requires reconfiguring goals and suppressing the previous rule, a prefrontal "set-shifting" function. The switch cost (RT on switch minus repeat trials) is a direct index of flexibility.',
+    evidence: ['Moderate (near)', 'Karbach & Kray (2009): variable task-switching training reduced switch costs on new switching tasks across age groups, with some transfer to inhibition and WM; later replications are mixed for far transfer.'],
+    improved: 'Reports switch cost (not just a points score) so you can see the actual cognitive mechanism changing; random rather than predictable switching (harder, less strategy-gameable); variability in task rules as recommended by Karbach & Kray.',
+  },
+  arrows: {
+    inspired: 'Lumosity "Lost in Migration" (flanker); "Disillusion"/"Train of Thought" (inhibition); go/no-go paradigms.',
+    researchers: 'Barbara & Charles Eriksen (flanker, 1974); Adele Diamond (2013); Adam Gazzaley & Joaquin Anguera (interference training, Nature 2013).',
+    how: 'Respond to the centre arrow while flankers point the same or opposite way; red trials require withholding. The response window shrinks with a 3-down/1-up staircase.',
+    why: 'Combines interference control (ignoring distractors) with response inhibition (stopping). Gazzaley\'s NeuroRacer work suggests training under interference, with adaptive difficulty, is the active ingredient.',
+    evidence: ['Limited–moderate', 'Anguera et al. (2013): adaptive multitasking training in 60–85 year-olds (n=46) improved multitasking costs, with gains in untrained working memory and sustained attention at 6 months. Small sample; inhibition training generally shows narrow transfer.'],
+    improved: 'Jittered fixation (stops rhythm-based anticipation); separate metrics for interference cost and no-go false-alarm rate; staircase driven by go trials only so caution isn\'t rewarded.',
+  },
+  logic: {
+    inspired: 'Lumosity "Pet Detective"/problem-solving games; Elevate reasoning; Raven\'s Progressive Matrices.',
+    researchers: 'John C. Raven (1938); Carpenter, Just & Shell (1990, rule taxonomy); Zhang et al. (RAVEN dataset, 2019); Hu et al. (I-RAVEN balanced answers, 2021).',
+    how: 'Each 3×3 puzzle is generated fresh with rules (constant, progression, distribute-three) on shape, count, colour and fill. Difficulty controls how many attributes vary.',
+    why: 'Inductive rule discovery is the hallmark of fluid reasoning. Practice improves strategy (feature-by-feature analysis, rule naming).',
+    evidence: ['Practice ≠ IQ', 'Training on matrix items improves matrix scores, which makes them invalid as an IQ measure afterwards. Reasoning-strategy training in ACTIVE improved reasoning tests and self-reported daily function at 10 years (Rebok et al. 2014), but not dementia risk.'],
+    improved: 'Infinite procedurally-generated items (no memorising an item bank); I-RAVEN balanced answer sets: every feature value appears in exactly half the options, which eliminates the "pick the most common features" shortcut found in standard RPM-style apps; verified by automated tests over 500 puzzles.',
+  },
+  math: {
+    inspired: 'Elevate "Math" games (percentages, estimation, quick arithmetic); Lumosity "Raindrops".',
+    researchers: 'Hikaru Takeuchi, Ryuta Kawashima et al. (Tohoku University; processing-speed training, J Neurosci 2011).',
+    how: '90-second sprint; operand size and operations adapt after each problem with a 2-down/1-up staircase. The answer auto-submits when correct.',
+    why: 'Fluent arithmetic frees working memory and is directly useful. Speeded simple calculation engages fronto-parietal networks.',
+    evidence: ['Domain-specific', 'You will get faster at mental arithmetic; transfer beyond arithmetic is limited.'],
+    improved: 'Automatic submission removes keyboard overhead from RT; skip button prevents frustration loops; staircase instead of fixed levels.',
+  },
+  palace: {
+    inspired: 'memoryOS (memory-palace lessons, 3D palace, spaced repetition); Elevate memory games; Lumosity "Memory Lane".',
+    researchers: 'Martin Dresler, Boris Konrad et al. (Neuron 2017); Henry Roediger & Jeffrey Karpicke (testing effect, 2006); Nicholas Cepeda, Harold Pashler et al. (spacing meta-analysis, 2006); Piotr Woźniak (SM-2 algorithm).',
+    how: 'You build a route of familiar spots, place vivid images of words at each spot, do a short distractor task, then recall each word cued by its spot. Each list becomes a flashcard scheduled with SM-2 spaced repetition.',
+    why: 'Loci exploit the brain\'s strong spatial and visual memory (hippocampal place coding) to give arbitrary items a structured retrieval path. Retrieval practice at expanding intervals produces durable memory.',
+    evidence: ['Strong (for memory)', 'Dresler et al. 2017: 6 weeks of loci training more than doubled novices\' recall, with gains retained at 4 months and functional connectivity shifting toward memory champions; WM-training and no-training controls did not improve similarly. Spacing and testing effects are among the most replicated results in cognitive psychology.'],
+    improved: 'Adds what memoryOS-style apps often lack: (1) a distractor interval so recall measures long-term, not short-term memory; (2) spaced re-testing of each list via SM-2 with recall-based grading; (3) typo-tolerant answer matching; (4) high-imageability word pool (Paivio\'s dual coding); (5) adaptive list length.',
+  },
+};
+
+export const FINDINGS = [
+  ['Brain training improves what you train', 'Practice reliably improves trained and closely related tasks. Evidence for broad "far transfer" to IQ or everyday life is weak (Simons et al., Psychol Sci Public Interest 2016; Melby-Lervåg et al. 2016). Lumos Labs paid $2M to settle FTC charges (2016) over unsupported claims.'],
+  ['Speed training has the best long-term data', 'ACTIVE (N=2,832): speed-of-processing training with boosters was associated with lower dementia incidence at 10 and 20 years. Boosters were necessary. That\'s why NeuroGym schedules returns, not marathons.'],
+  ['Dose: a few sessions a week beats daily marathons', 'Lampit et al. (PLoS Med 2014, 51 RCTs): ≤3 sessions/week was more effective than more frequent training, and unsupervised home training showed weaker effects. NeuroGym recommends 3–5 short sessions per week and nudges rest days.'],
+  ['Variety + adaptivity', 'Multi-domain programmes and continuous adaptive difficulty keep training in the "desirable difficulty" zone (Bjork). Every NeuroGym exercise uses a psychophysical staircase (Levitt 1971) converging on ~71–79% success.'],
+  ['Strategies transfer better than drills', 'The method of loci is a usable real-world strategy with large, durable effects (Dresler 2017), unlike most drills.'],
+  ['Exercise is the strongest "brain trainer"', 'Northey et al. (Br J Sports Med 2018, 36 RCTs): moderate-to-vigorous exercise improved cognition in adults over 50 (SMD 0.29), independent of domain. Multidomain lifestyle programmes (FINGER, Ngandu et al. Lancet 2015) improved cognition in at-risk older adults.'],
+  ['Learn demanding new skills', 'Park et al. (Psychol Sci 2014, Synapse Project): learning digital photography or quilting for 3 months improved episodic memory more than social or passive activities.'],
+  ['Measure transfer honestly', 'Game scores always go up. NeuroGym\'s monthly Check-up uses untrained tasks so you can see whether gains generalise.'],
+];
+
+export const REFERENCES = [
+  'Anguera, J. A. et al. (2013). Video game training enhances cognitive control in older adults. Nature, 501, 97–101.',
+  'Au, J. et al. (2015). Improving fluid intelligence with training on working memory: a meta-analysis. Psychon Bull Rev, 22, 366–377.',
+  'Ball, K. et al. (2002). Effects of cognitive training interventions with older adults: the ACTIVE trial. JAMA, 288, 2271–2281.',
+  'Cepeda, N. J. et al. (2006). Distributed practice in verbal recall tasks. Psychol Bull, 132, 354–380.',
+  'Coe, N. B. et al. (2026). Impact of cognitive training on claims-based diagnosed dementia over 20 years: evidence from the ACTIVE study. Alzheimer\'s Dement (TRCI). doi:10.1002/trc2.70197',
+  'Diamond, A. (2013). Executive functions. Annu Rev Psychol, 64, 135–168.',
+  'Dresler, M. et al. (2017). Mnemonic training reshapes brain networks to support superior memory. Neuron, 93, 1227–1235.',
+  'Hardy, J. L. et al. (2015). Enhancing cognitive abilities with comprehensive training: a large, online, randomized, active-controlled trial. PLoS ONE, 10, e0134467.',
+  'Hu, S. et al. (2021). Stratified rule-aware network for abstract visual reasoning (I-RAVEN). AAAI.',
+  'Jaeggi, S. M. et al. (2008). Improving fluid intelligence with training on working memory. PNAS, 105, 6829–6833.',
+  'Karbach, J. & Kray, J. (2009). How useful is executive control training? Dev Sci, 12, 978–990.',
+  'Lampit, A., Hallock, H. & Valenzuela, M. (2014). Computerized cognitive training in cognitively healthy older adults. PLoS Med, 11, e1001756.',
+  'Levitt, H. (1971). Transformed up-down methods in psychoacoustics. J Acoust Soc Am, 49, 467–477.',
+  'Melby-Lervåg, M., Redick, T. S. & Hulme, C. (2016). Working memory training does not improve performance on measures of intelligence or other measures of far transfer. Perspect Psychol Sci, 11, 512–534.',
+  'Ngandu, T. et al. (2015). A 2 year multidomain intervention (FINGER). Lancet, 385, 2255–2263.',
+  'Northey, J. M. et al. (2018). Exercise interventions for cognitive function in adults older than 50. Br J Sports Med, 52, 154–160.',
+  'Park, D. C. et al. (2014). The impact of sustained engagement on cognitive function in older adults: the Synapse Project. Psychol Sci, 25, 103–112.',
+  'Rebok, G. W. et al. (2014). Ten-year effects of the ACTIVE cognitive training trial. J Am Geriatr Soc, 62, 16–24.',
+  'Roediger, H. L. & Karpicke, J. D. (2006). Test-enhanced learning. Psychol Sci, 17, 249–255.',
+  'Simons, D. J. et al. (2016). Do "brain-training" programs work? Psychol Sci Public Interest, 17, 103–186.',
+  'Takeuchi, H. et al. (2011). Effects of training of processing speed on neural systems. J Neurosci, 31, 12139–12148.',
+  'Zhang, C. et al. (2019). RAVEN: a dataset for relational and analogical visual reasoning. CVPR.',
+];

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>NeuroGym · Brain Gym</title>
+  <meta name="description" content="NeuroGym: an evidence-based brain gym for memory, speed, attention, flexibility and reasoning. Free, offline, private. Works on Mac, PC, iPhone, iPad and Android.">
+  <meta name="theme-color" content="#0f1222" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="NeuroGym">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="#/home"><img src="icons/icon.svg" alt="" width="28" height="28"> NeuroGym</a>
+    <nav aria-label="Main">
+      <a href="#/home"><span>🏠</span><em>Today</em></a>
+      <a href="#/games"><span>🎮</span><em>Exercises</em></a>
+      <a href="#/progress"><span>📈</span><em>Progress</em></a>
+      <a href="#/habits"><span>🌱</span><em>Habits</em></a>
+      <a href="#/science"><span>🔬</span><em>Science</em></a>
+      <a href="#/settings"><span>⚙️</span><em>Settings</em></a>
+    </nav>
+  </header>
+  <main id="view" tabindex="-1"></main>
+  <div id="play" hidden></div>
+  <noscript><p style="padding:16px">NeuroGym needs JavaScript enabled.</p></noscript>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
