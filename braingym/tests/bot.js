@@ -19,9 +19,9 @@
     if (window.__botOff) return;
     const play = $('#play'); if (!play || play.hidden) return;
     const start = $('#play .intro .btn.primary'); if (start) { start.click(); return; }
-    const title = $('#play .gtitle')?.textContent || '';
+    const gid = play.dataset.game || '';
 
-    if (title === 'Echo Grid') {
+    if (gid === 'echo') {
       const label = $('.big-label')?.textContent || '';
       const m = label.match(/Block (\d+)\/\d+ · N = (\d+)/);
       if (m && m[1] !== S.echo.block) { S.echo.block = m[1]; S.echo.hist = []; S.echo.n = +m[2]; }
@@ -40,7 +40,7 @@
       }
       return;
     }
-    if (title === 'Flash Field') {
+    if (gid === 'flash') {
       const layer = $('.ufov-layer');
       if (layer && layer !== S.flash.layer) {
         S.flash.layer = layer; S.flash.a1 = S.flash.a2 = false;
@@ -50,12 +50,12 @@
         S.flash.slot = ((Math.round((Math.atan2(dy, dx) + Math.PI / 2) / (Math.PI / 4)) % 8) + 8) % 8;
       }
       const q = $('.controls .q')?.textContent || '';
-      if (q === 'Centre?' && !S.flash.a1) { const bs = $$('.controls .btn.resp'); const i = Math.max(0, bs.findIndex(b => b.dataset.kind === S.flash.central)); S.flash.a1 = true; pd(bs[i]); return; }
+      if ($('.controls .veh-btn') && !S.flash.a1) { const bs = $$('.controls .btn.resp'); const i = Math.max(0, bs.findIndex(b => b.dataset.kind === S.flash.central)); S.flash.a1 = true; pd(bs[i]); return; }
       const spots = $$('.spot');
       if (spots.length === 8 && S.flash.a1 && !S.flash.a2 && !spots.some(s => s.classList.contains('right'))) { S.flash.a2 = true; pd(spots[S.flash.slot ?? 0]); }
       return;
     }
-    if (title === 'Rule Shift') {
+    if (gid === 'shift') {
       const card = $('.card-stim'), pair = card?.querySelector('.pair')?.textContent;
       if (!pair || card.classList.contains('good') || card.classList.contains('bad')) { if (!pair) S.shift.done = false; return; }
       if (S.shift.done) return;
@@ -65,7 +65,7 @@
       pd($$('.controls .btn.resp')[ans]);
       return;
     }
-    if (title === 'Arrow Storm') {
+    if (gid === 'arrows') {
       const a = $('.arrows'); const t = a?.textContent || '';
       if (t.length !== 5) { S.arrows.done = false; return; }
       if (S.arrows.done || a.classList.contains('nogo')) return;
@@ -73,15 +73,15 @@
       pd($$('.controls .btn.resp')[t[2] === '→' ? 1 : 0]);
       return;
     }
-    if (title === 'Grid Recall') {
+    if (gid === 'grid') {
       const tiles = $$('.grid4 .tile'); const label = $('.big-label')?.textContent || '';
       if (label !== S.grid.lastLabel) { S.grid.lastLabel = label; S.grid.seq = []; S.grid.clicked = 0; }
       const on = tiles.findIndex(t => t.classList.contains('on'));
       if (on >= 0 && S.grid.seq[S.grid.seq.length - 1] !== on) S.grid.seq.push(on);
-      const span = +(label.match(/(\d+) tiles/) || [])[1];
+      const span = +($('.big-label')?.dataset.span || 0);
       if (!tiles.length || tiles[0].disabled) return;
       if (S.grid.seq.length !== span) { if (!S.grid.seq.length && on < 0) S.grid.seq = Array(span).fill(0).map((_, i) => i); else return; } // resumed mid-trial: give up this round
-      const order = label.includes('Backward') ? [...S.grid.seq].reverse() : S.grid.seq;
+      const order = $('.big-label')?.dataset.back ? [...S.grid.seq].reverse() : S.grid.seq;
       if (S.grid.clicked < order.length) {
         const now = performance.now();
         if (S.grid.lastClick && now - S.grid.lastClick < 8) return; // let the game re-arm its listener
@@ -89,12 +89,12 @@
       }
       return;
     }
-    if (title === 'Pattern Logic') {
+    if (gid === 'logic') {
       const m = window.__ngTest?.matrix; const opts = $$('.opt');
       if (m && opts.length === 8 && S.logic.m !== m) { S.logic.m = m; pd(opts[m.answerIndex]); }
       return;
     }
-    if (title === 'Number Sense') {
+    if (gid === 'math') {
       const p = $('.problem')?.textContent || '', ans = $('.answer');
       const mm = p.match(/^(\d+) (.) (\d+) =$/);
       if (!mm || !ans || ans.textContent !== '') return;
@@ -104,7 +104,7 @@
       for (const d of String(r)) key(d);
       return;
     }
-    if (title.startsWith('Mind Palace')) {
+    if (gid === 'palace') {
       const locus = $('.locus')?.textContent; const word = $('.word')?.textContent;
       if (locus && word) { S.palace.map[locus] = word.toLowerCase(); const b = $('.controls .btn.primary'); if (b && !b.disabled) b.click(); return; }
       const inp = $('.word-in');
@@ -113,7 +113,7 @@
     }
     const T = window.__ngTest || {}, tnow = performance.now();
     const throttle = (k, ms) => { if (S[k] && tnow - S[k] < ms) return true; S[k] = tnow; return false; };
-    if (title === 'Word Forge') {
+    if (gid === 'word') {
       if (!T.word || !$('.wf-tiles')) return;
       if (S.wordSeed !== T.word.seed) { S.wordSeed = T.word.seed; S.wordQueue = [...T.word.answers]; }
       if (!S.wordQueue.length || throttle('lastWord', 30)) return;
@@ -122,7 +122,7 @@
       key('Enter');
       return;
     }
-    if (title === 'Name Match') {
+    if (gid === 'names') {
       const next = $('.controls .btn.primary');
       if (next && !next.disabled && $('.nm-name')) { if (!throttle('lastNm', 15)) next.click(); return; }
       const opts = $$('.nm-opt');
@@ -132,8 +132,8 @@
       }
       return;
     }
-    if (title === 'Pathfinder') {
-      if (!T.route || ($('.gstatus')?.textContent || '') !== 'Your turn') return;
+    if (gid === 'path') {
+      if (!T.route || play.dataset.phase !== 'walk') return;
       const cells = $$('.pf-cell');
       if (S.pfRoute !== T.route.route) { S.pfRoute = T.route.route; S.pfPos = 0; }
       if (S.pfPos >= T.route.route.length - 1 || throttle('lastPf', 10)) return;
@@ -141,9 +141,9 @@
       pd(cells.find(x => +x.dataset.r === r && +x.dataset.c === c));
       return;
     }
-    if (title === 'Orbit Tracker') {
+    if (gid === 'orbit') {
       const st = $('.gstatus')?.textContent || '', o = T.orbit, cv = $('canvas.orbit');
-      if (!o || !cv || !/^Tap \d/.test(st)) return;
+      if (!o || !cv || play.dataset.phase !== 'pick') return;
       if (S.orbBalls !== o.balls) { S.orbBalls = o.balls; S.orbDone = new Set(); }
       if (throttle('lastOrb', 10)) return;
       const i = o.balls.findIndex((b, k) => b.target && !S.orbDone.has(k));
@@ -153,7 +153,7 @@
       cv.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, clientX: rc.left + o.balls[i].x, clientY: rc.top + o.balls[i].y }));
       return;
     }
-    if (title === 'Active Break') {
+    if (gid === 'active') {
       const bigEl = $('.ab-big'), big = bigEl?.textContent || '', tap = $('.ab-tap');
       if (!tap || !/^\d+$/.test(big)) { S.abNode = null; return; }
       if (S.abNode === big) return;
@@ -161,7 +161,7 @@
       if (+big % 3 === 0) pd(tap);
       return;
     }
-    if (title === 'Check-up') {
+    if (gid === 'checkup') {
       const dot = $('.crt .dot');
       if ($('.crt')) {
         if (!dot) { S.crt.done = false; return; }

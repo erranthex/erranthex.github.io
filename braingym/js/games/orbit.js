@@ -1,7 +1,8 @@
 // Orbit Tracker — multiple-object tracking (Pylyshyn & Storm 1988).
 // Basis: older adults show training gains equivalent to young adults (Legault, Allard & Faubert,
 // Frontiers in Psychology 2013); preliminary transfer to hazard detection in driving (2023).
-import { el, frame, intro, sleep, beep, raf, now, T } from '../ui.js';
+import { introFor, el, frame, intro, sleep, beep, raf, now, T } from '../ui.js';
+import { t, tl } from '../i18n.js';
 import { mean, clamp } from '../core.js';
 
 const TRIALS = 10, TOTAL = 10;
@@ -24,13 +25,7 @@ export default {
   id: 'orbit', name: 'Orbit Tracker', domain: 'Attention', icon: 'orbit', minutes: 3,
   tagline: 'Keep your eyes on the glowing orbs as they mingle.',
   async run(root, ctx) {
-    await intro(root, {
-      title: 'Orbit Tracker · multiple-object tracking',
-      how: `<p>Some orbs glow for a moment. Then they all look the same and drift around.</p>
-            <p>Keep tracking the glowing ones with your attention, eyes relaxed near the centre. When they stop, <b>tap the ones you tracked</b>.</p>
-            <p>Perfect rounds add speed, then more targets.</p>`,
-      why: `Tracking several moving objects at once draws on sustained, divided attention and is the basis of 3D multiple-object-tracking training used with athletes and older drivers. Older adults improve at the same rate as young adults (Legault et al., 2013). Evidence for broad real-world transfer is still limited, so think of this as focused attention practice.`,
-    }, ctx.signal);
+    await intro(root, introFor('orbit'), ctx.signal);
     let L = typeof ctx.level === 'number' ? ctx.level : 4;
     const f = frame(root, 'Orbit Tracker', ctx.quit);
     const canvas = el('canvas', { class: 'orbit', 'aria-label': 'tracking arena' });
@@ -38,10 +33,10 @@ export default {
     const cs = getComputedStyle(root);
     const col = (v) => cs.getPropertyValue(v).trim() || '#888';
     const res = [];
-    for (let t = 0; t < TRIALS; t++) {
-      f.progress(t / TRIALS);
+    for (let ti = 0; ti < TRIALS; ti++) {
+      f.progress(ti / TRIALS);
       const { k, speed, total } = spec(L);
-      f.setStatus(`${k} targets · speed ${speed}`);
+      f.setStatus(t('g.orbit.status', { k, s: speed })); root.dataset.phase = '';
       const rect = canvas.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
       const w = rect.width, h = rect.height; canvas.width = w * dpr; canvas.height = h * dpr;
       const g = canvas.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -92,20 +87,20 @@ export default {
         canvas.addEventListener('pointerdown', onDown);
         ctx.signal.addEventListener('abort', () => { canvas.removeEventListener('pointerdown', onDown); rej(new DOMException('aborted', 'AbortError')); }, { once: true });
       });
-      f.setStatus(`Tap ${k}`);
+      f.setStatus(t('g.orbit.tap', { k })); root.dataset.phase = 'pick';
       await done;
       const correct = [...picked].filter(i => balls[i].target).length;
       const ok = correct === k;
       paint('reveal', picked);
       beep(ctx.settings, ok); f.hit(ok);
       res.push({ k, speed, correct, ok });
-      if (ok) L = Math.min(18, L + 1); else if (correct < k - 1) L = Math.max(1, L - 1); // 1-up on perfect, down only on clear failure
+      if (!ctx.fixed) { if (ok) L = Math.min(18, L + 1); else if (correct < k - 1) L = Math.max(1, L - 1); } // 1-up on perfect, down only on clear failure
       await sleep(ok ? 700 : 1400, ctx.signal);
     }
     f.progress(1);
     const perfect = res.filter(r => r.ok);
     const capacity = perfect.length ? Math.max(...perfect.map(r => r.k)) : Math.max(1, ...res.map(r => r.correct));
     const speedLevel = perfect.length ? Math.max(...perfect.filter(r => r.k === capacity).map(r => r.speed)) : 0;
-    return { level: L, score: capacity, accuracy: mean(res.map(r => r.correct / r.k)), summary: [`Tracked up to ${capacity} orbs${speedLevel ? ` at speed ${speedLevel}` : ''}`, `Perfect rounds: ${perfect.length}/${res.length}`, `Next: ${spec(L).k} targets · speed ${spec(L).speed}`], metrics: { capacity, speedLevel } };
+    return { level: L, score: capacity, accuracy: mean(res.map(r => r.correct / r.k)), summary: [t('g.orbit.s1', { n: capacity }), t('g.orbit.s2', { a: perfect.length, b: res.length }), t('g.orbit.s3', { k: spec(L).k, s: spec(L).speed })], metrics: { capacity, speedLevel } };
   },
 };

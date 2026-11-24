@@ -51,9 +51,13 @@ async function playGame(page, id) {
 
   console.log('Desktop (1360×860)');
   const D = await newPage(browser, { viewport: { width: 1360, height: 860 } }, base);
-  // Onboarding
-  await D.page.waitForSelector('.onb');
+  // Welcome → guest → onboarding
+  await D.page.waitForSelector('.welcome');
   await D.page.evaluate(() => { window.__botOff = true; });
+  ok(await D.page.locator('#lang-select option').count() === 7, 'language picker offers 7 languages');
+  await D.page.getByRole('button', { name: 'Play as guest' }).click();
+  await D.page.waitForSelector('.onb');
+  ok((await D.page.evaluate(() => window.__mentaro.profiles.current())).guest === true, 'guest profile created');
   await D.page.getByRole('button', { name: 'Get started' }).click();
   await D.page.getByRole('button', { name: 'Memory' }).click();
   await D.page.getByRole('button', { name: 'Continue' }).click();
@@ -73,11 +77,38 @@ async function playGame(page, id) {
   ok(await D.page.locator('.stat-pill.streak b').innerText() === '1', 'streak shows 1');
   ok(await D.page.locator('.node.current').count() === 1, 'learning path shows next node');
 
-  // Visual letters for Echo Grid so the screen-reading bot can see them (speech is tested manually).
+  // Guest → named profile keeps progress
+  ok(await D.page.locator('.banner.guest').count() === 1, 'guest sees "save my progress" banner');
+  const xpGuest = (await st(D.page)).xp;
+  await D.page.evaluate(() => { location.hash = '#profile'; }); await D.page.waitForSelector('.account.guest');
+  await D.page.fill('#acc-name', 'Alex'); await D.page.fill('#acc-pin', '1234');
+  await D.page.locator('.acc-form button[type=submit]').click();
+  let me = await D.page.evaluate(() => window.__mentaro.profiles.current());
+  ok(!me.guest && me.name === 'Alex' && me.pin && (await st(D.page)).xp === xpGuest, 'guest upgraded to profile "Alex" with PIN, progress kept');
+
+  // Manual difficulty: fixed level, Auto level untouched
   await D.page.evaluate(() => window.__mentaro.store.set(s => { s.settings.speech = false; s.settings.sound = false; return s; }));
+  const autoFlash = (await st(D.page)).levels.flash;
+  await D.page.evaluate(() => { window.__botOff = true; window.__mentaro.play([window.__mentaro.ALL.flash]); });
+  await D.page.locator('.seg-b[data-mode=manual]').click();
+  await D.page.locator('.chip-b[data-preset=hard]').click();
+  await D.page.locator('.step[aria-label="Level up"]').click();
+  ok(await D.page.locator('.diff .lvl-num').innerText() === 'Level 19 of 39', 'manual picker: Hard preset + stepper → level 19');
+  await D.page.evaluate(() => { window.__botOff = false; });
+  await D.page.getByRole('button', { name: "Let's go" }).click(); await idle(D.page);
+  let sm = await st(D.page);
+  ok(sm.results.at(-1).manual === true && sm.results.at(-1).level === 19 && sm.levels.flash === autoFlash && sm.diff.flash.mode === 'manual', `manual round stays at 19, Auto level kept at ${autoFlash}`);
+  await D.page.evaluate(() => { window.__botOff = true; window.__mentaro.play([window.__mentaro.ALL.flash]); });
+  ok(await D.page.locator('.seg-b.on').getAttribute('data-mode') === 'manual', 'manual choice remembered next time');
+  await D.page.locator('.seg-b[data-mode=auto]').click();
+  await D.page.evaluate(() => { window.__botOff = false; });
+  await D.page.getByRole('button', { name: "Let's go" }).click(); await idle(D.page);
+  sm = await st(D.page);
+  ok(sm.levels.flash === autoFlash + 10 && sm.diff.flash.mode === 'auto', `back to Auto: level rose ${autoFlash} → ${sm.levels.flash}`);
+
   // Every exercise, perfect bot → expected adaptive response.
   const expect = {
-    flash: (r) => r.level === r.before + 10 && r.last.accuracy === 1,
+    flash: (r) => r.level === Math.min(39, r.before + 10) && r.last.accuracy === 1,
     shift: (r) => r.level === Math.min(20, r.before + 13) && r.last.accuracy === 1,
     arrows: (r) => r.last.accuracy === 1 && (r.level === 20 || r.level > r.before + 5),
     grid: (r) => r.level.f === r.before.f + 3 && r.level.b === r.before.b + 3 && r.last.accuracy === 1,
@@ -159,6 +190,44 @@ async function playGame(page, id) {
   ok(n0 === (await st(D.page)).results.length, 'quitting saves nothing');
   await D.page.evaluate(() => { window.__botOff = false; });
 
+  // Languages: every language renders the main screens without raw keys
+  for (const code of ['es', 'it', 'fr', 'de', 'pt', 'zh', 'en']) {
+    await D.page.evaluate((c) => window.__mentaro.setLang(c), code); await D.page.waitForTimeout(150);
+    for (const r of ['learn', 'games', 'brain', 'profile']) {
+      await D.page.evaluate((r) => { location.hash = '#' + r; }, r); await D.page.waitForTimeout(80);
+      const raw = await D.page.evaluate(() => (document.body.innerText.match(/\b(?:g|lvl|btn|nav|prof|acc|learn|brain|res|q|dom|diff|onb)\.[a-z][\w.]*/g) || []).slice(0, 3));
+      if (raw.length) ok(false, `${code} ${r}: raw keys ${raw}`);
+    }
+    ok(await D.page.evaluate(() => document.documentElement.lang) === (code === 'zh' ? 'zh-Hans' : code), `${code}: UI switched, no raw keys`);
+  }
+  // Word Forge in Chinese uses Chinese characters
+  await D.page.evaluate(() => window.__mentaro.setLang('zh'));
+  await D.page.evaluate(() => { window.__botOff = true; window.__mentaro.play([window.__mentaro.ALL.word]); });
+  await D.page.locator('#play .intro .btn.primary').click(); await D.page.waitForSelector('.wf-tile');
+  ok(/[\u4e00-\u9fff]/.test(await D.page.locator('.wf-tile').first().innerText()), 'Word Forge uses Chinese characters in Chinese');
+  await D.page.click('#play .icon-btn'); await D.page.locator('.modal .btn.danger-solid').click(); await idle(D.page, 10000);
+  await D.page.evaluate(() => { window.__botOff = false; return window.__mentaro.setLang('en'); });
+
+  // Profiles: sign out, PIN protection, separate progress
+  await D.page.evaluate(() => { window.__mentaro.profiles.signOut(); location.hash = '#learn'; location.reload(); });
+  await D.page.waitForSelector('.welcome');
+  ok(await D.page.locator('.who-row').count() === 1, 'welcome lists existing profile');
+  await D.page.locator('.who-row').first().click(); await D.page.fill('#pin-input', '0000'); await D.page.keyboard.press('Enter');
+  ok(await D.page.locator('.welcome').count() === 1, 'wrong PIN rejected');
+  await D.page.locator('.who-row').first().click(); await D.page.fill('#pin-input', '1234'); await D.page.keyboard.press('Enter');
+  await D.page.waitForSelector('#view .main-col');
+  ok((await D.page.evaluate(() => window.__mentaro.profiles.current())).name === 'Alex', 'correct PIN opens profile');
+  const alexXp = (await st(D.page)).xp;
+  await D.page.evaluate(() => { window.__mentaro.profiles.signOut(); location.reload(); });
+  await D.page.waitForSelector('.welcome');
+  await D.page.getByRole('button', { name: 'Create my profile' }).click();
+  await D.page.fill('#acc-name', 'Sam'); await D.page.locator('.acc-form button[type=submit]').click();
+  await D.page.waitForSelector('.onb');
+  ok((await st(D.page)).xp === 0 && (await D.page.evaluate(() => window.__mentaro.profiles.list().length)) === 2, 'second profile starts fresh');
+  await D.page.evaluate(() => { const p = window.__mentaro.profiles; const alex = p.list().find(x => x.name === 'Alex'); p.switchTo(alex.id, '1234'); location.hash = '#learn'; location.reload(); });
+  await D.page.waitForSelector('#view .main-col');
+  ok((await st(D.page)).xp === alexXp, 'switching back restores Alex\'s progress');
+
   // Persistence + routes
   await D.page.reload();
   for (const r of ['learn', 'games', 'brain', 'league', 'profile', 'science']) {
@@ -183,7 +252,10 @@ async function playGame(page, id) {
   console.log('Phone (iPhone 13 profile)');
   const iphone = devices['iPhone 13'];
   const P = await newPage(browser, { viewport: iphone.viewport, deviceScaleFactor: 2, isMobile: true, hasTouch: true, userAgent: iphone.userAgent }, base);
-  await P.page.waitForSelector('.onb');
+  await P.page.waitForSelector('.welcome');
+  ok(await noOverflow(P.page), 'phone welcome: no overflow');
+  if (SHOTS) await P.page.screenshot({ path: `${SHOTS}/phone-welcome.png` });
+  await P.page.getByRole('button', { name: 'Play as guest' }).tap(); await P.page.waitForSelector('.onb');
   ok(await noOverflow(P.page), 'phone onboarding: no overflow');
   await P.page.evaluate(() => { window.__mentaro.store.set(s => { s.profile.onboarded = true; s.path.done = 30; return s; }); location.hash = '#learn'; });
   await P.page.reload();

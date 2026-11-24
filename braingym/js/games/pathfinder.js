@@ -1,7 +1,8 @@
 // Pathfinder — route learning in a landmark map, with map rotation at higher levels.
 // Basis: spatial-navigation training preserved hippocampal volume in younger and older adults
 // (Lövdén et al., Neurobiology of Aging 2012); hippocampal place/route memory (Maguire et al. 2000).
-import { el, frame, intro, sleep, beep, waitResponse } from '../ui.js';
+import { introFor, el, frame, intro, sleep, beep, waitResponse } from '../ui.js';
+import { t, tl } from '../i18n.js';
 import { createStaircase, stepStaircase, shuffle, mean } from '../core.js';
 import { icon } from '../icons.js';
 
@@ -32,18 +33,12 @@ export default {
   id: 'path', name: 'Pathfinder', domain: 'Memory', icon: 'path', minutes: 3,
   tagline: 'Learn a route through town, then walk it from memory.',
   async run(root, ctx) {
-    await intro(root, {
-      title: 'Pathfinder · spatial navigation',
-      how: `<p>Watch the explorer walk a route through a town with landmarks.</p>
-            <p>Then retrace it from the start, one step at a time, by tapping neighbouring squares.</p>
-            <p>At higher levels the <b>map turns</b> before you walk, so use the landmarks, not the screen direction.</p>`,
-      why: `Route learning relies on the hippocampus, the brain's map-maker. In a 4-month study, spatial-navigation training kept hippocampal volume stable in younger and older adults while untrained controls showed age-typical shrinkage (Lövdén et al., 2012). Rotating the map forces landmark-based (allocentric) navigation rather than memorising screen positions.`,
-    }, ctx.signal);
-    let st = createStaircase({ level: ctx.level || 4, min: 2, max: 14, down: 2, up: 1 });
+    await intro(root, introFor('path'), ctx.signal);
+    let st = createStaircase({ level: ctx.level || 4, min: 2, max: 14, down: 2, up: 1, fixed: ctx.fixed });
     const f = frame(root, 'Pathfinder', ctx.quit);
     const res = [];
-    for (let t = 0; t < TRIALS; t++) {
-      f.progress(t / TRIALS);
+    for (let ti = 0; ti < TRIALS; ti++) {
+      f.progress(ti / TRIALS);
       const len = st.level, route = makeRoute(len, ctx.rng), k = rotationFor(len);
       const marks = shuffle([...Array(N * N).keys()], ctx.rng).filter(i => !route.some(([r, c]) => r * N + c === i)).slice(0, 6);
       const lm = Object.fromEntries(marks.map((m, i) => [m, LANDMARKS[i % LANDMARKS.length]]));
@@ -59,7 +54,7 @@ export default {
           if (lm[idx]) cell.classList.add('lm');
           cells.push(cell); map.append(cell);
         }
-        f.stage.append(el('div', { class: 'big-label' }, `${len} steps${turn ? ` · map turned ${turn * 90}°` : ''}`), map);
+        f.stage.append(el('div', { class: 'big-label' }, t('g.path.steps', { n: len }) + (turn ? t('g.path.turned', { d: turn * 90 }) : '')), map);
         return cells;
       };
       const at = (cells, [r, c]) => cells.find(x => +x.dataset.r === r && +x.dataset.c === c);
@@ -70,7 +65,7 @@ export default {
       await sleep(500, ctx.signal);
       cells = draw(k);
       at(cells, route[0]).classList.add('start', 'here');
-      f.setStatus('Your turn');
+      f.setStatus(t('g.path.turn')); root.dataset.phase = 'walk';
       let pos = 0, ok = true;
       while (pos < route.length - 1) {
         const r = await waitResponse({ buttons: cells.map(b => [b, [+b.dataset.r, +b.dataset.c]]), signal: ctx.signal });
@@ -84,11 +79,11 @@ export default {
       beep(ctx.settings, ok); f.hit(ok);
       res.push({ len, ok, rotated: k > 0 });
       st = stepStaircase(st, ok);
-      f.setStatus('');
+      f.setStatus(''); root.dataset.phase = '';
       await sleep(ok ? 600 : 1500, ctx.signal);
     }
     f.progress(1);
     const longest = Math.max(0, ...res.filter(r => r.ok).map(r => r.len));
-    return { level: st.level, score: longest, accuracy: mean(res.map(r => +r.ok)), summary: [`Longest route: ${longest} steps`, `Routes walked: ${res.filter(r => r.ok).length}/${res.length}`, `Next start: ${st.level} steps`], metrics: { longest } };
+    return { level: st.level, score: longest, accuracy: mean(res.map(r => +r.ok)), summary: [t('g.path.s1', { n: longest }), t('g.path.s2', { a: res.filter(r => r.ok).length, b: res.length }), t('g.path.s3', { n: st.level })], metrics: { longest } };
   },
 };

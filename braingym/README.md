@@ -27,6 +27,12 @@ Live once merged to the default branch: **https://erranthex.github.io/braingym/*
 
 The Brain Index is the mean of the domain scores. Each per-game skill is smoothed over sessions (EMA, α = 0.35). Anchors are task-defined rather than population norms, so the index tracks your own change. It is not an IQ score.
 
+## Accounts, difficulty and languages
+
+- **Play as guest** right away, or **create a profile** with a name and an optional 4-digit PIN. You can keep several profiles on one device, and a guest can later save their progress under a name. Progress is stored per profile on the device. A **backup code** or an export file moves a profile to another device. Real cloud accounts would need a backend, which is not built yet.
+- **Difficulty per game.** **Auto** is the default: an adaptive staircase raises or lowers the level after every round. **Manual** lets you pick Easy, Medium, Hard or Expert, or an exact level. A manual round stays at the chosen level and never changes your Auto level.
+- **7 languages:** English, Español, Italiano, Français, Deutsch, Português and 中文. The app detects the device language, and you can switch at any time. Word Forge uses a word list in each language; Chinese uses character tiles. Detailed scientific notes stay in English.
+
 ## Motivation system
 
 - **XP and player levels.** Accuracy, perfect rounds, level-ups and personal bests all earn bonus XP.
@@ -44,7 +50,7 @@ The Brain Index is the mean of the domain scores. Each per-game skill is smoothe
 
 - **Original work.** All code, game designs, artwork, the mascot and the icons are original. Faces in Name Match are drawn procedurally, and vehicles are original SVGs.
 - **Mechanics, not expression.** Mechanics come from public academic paradigms; no competitor screens, art, sounds or level designs are copied.
-- **Word list.** `data/words.txt` is derived from *wordfreq* and licensed CC BY-SA 4.0; see `data/LICENSE-words.md`.
+- **Word lists.** `data/words-*.txt` are derived from *wordfreq* and licensed CC BY-SA 4.0; see `data/LICENSE-words.md`.
 - **Health claims.** Copy describes what research found for each *method* and states that the app itself has not been clinically tested. There are no disease-prevention claims.
 - **Before commercial launch:**
   - Clear the trademark.
@@ -58,8 +64,8 @@ There is no build step; the app is plain ES modules.
 
 ```bash
 cd braingym && python3 -m http.server 8000      # http://localhost:8000
-node --test tests/*.test.mjs                     # 23 unit tests: staircase, d′, SM-2, scheduler, matrices, XP, streak, quests, league, scoring
-node tests/e2e.cjs                               # 92 Playwright checks: a bot plays all 13 games; onboarding, path, shop, quit, offline, phone layout
+node --test tests/*.test.mjs                     # 34 unit tests: engine, scoring, gamification, profiles, difficulty, i18n completeness (all 7 languages)
+node tests/e2e.cjs                               # 114 Playwright checks: guest/profile/PIN flows, manual vs auto difficulty, all languages, a bot plays all 13 games, offline, phone layout
 ```
 
 *Mentaro is a training tool, not a medical device.*

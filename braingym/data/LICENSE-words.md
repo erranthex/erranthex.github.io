@@ -1,10 +1,12 @@
-# words.txt
+# Word lists (words-*.txt)
 
-The 22,000 most frequent English words of 3 to 8 letters, filtered for profanity.
-They come from **wordfreq** by Robyn Speer, based on the `large_en` frequency table.
+Each file holds the most frequent words of one language, derived from **wordfreq** by Robyn Speer
+(https://github.com/rspeer/wordfreq):
 
-wordfreq data is licensed under the Creative Commons Attribution-ShareAlike 4.0 license
-(https://creativecommons.org/licenses/by-sa/4.0/). This derived list (`words.txt`) is
-redistributed under the same license. Source: https://github.com/rspeer/wordfreq
+- en, es, it, fr, de, pt: words of 3 to 8 letters, with accents removed (ß → ss) so the letters fit the tiles
+- zh: words of 2 to 4 Han characters
+- Each list is filtered with a small profanity blocklist.
 
-This license applies to this data file only. It does not apply to the application code.
+wordfreq data is licensed under Creative Commons Attribution-ShareAlike 4.0
+(https://creativecommons.org/licenses/by-sa/4.0/). These derived lists are redistributed under
+the same license. The license covers these data files only, not the application code.

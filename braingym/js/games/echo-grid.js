@@ -1,5 +1,6 @@
 // Echo Grid — adaptive dual n-back (Jaeggi, Buschkuehl, Jonides & Perrig, PNAS 2008).
-import { el, frame, intro, sleep, now, speak, speechAvailable, beep, flash } from '../ui.js';
+import { introFor, el, frame, intro, sleep, now, speak, speechAvailable, beep, flash } from '../ui.js';
+import { t, tl } from '../i18n.js';
 import { makeNbackSeq, nbackNextLevel, dprime, mean } from '../core.js';
 
 const LETTERS = ['C', 'H', 'K', 'L', 'Q', 'R', 'S', 'T']; // Jaeggi's consonant set
@@ -11,14 +12,7 @@ export default {
   tagline: 'Track positions and letters N steps back.',
   async run(root, ctx) {
     const audio = ctx.settings.speech && speechAvailable();
-    await intro(root, {
-      title: 'Echo Grid · dual n-back',
-      how: `<p>Each turn a square lights up ${audio ? 'and a letter is spoken' : 'with a letter inside it'}.</p>
-            <p>Press <b>Position</b> when the square is in the same place as <b>N turns ago</b>, and <b>Letter</b> when the letter matches N turns ago. Both, one, or neither can match.</p>
-            <p>You start at <b>N = ${ctx.level || 1}</b>. N rises after a block with fewer than 3 errors per stream and falls after more than 5.</p>`,
-      keys: 'A = Position · L = Letter',
-      why: `Dual n-back loads working-memory updating and binding. Jaeggi et al. (2008) reported dose-dependent gains on fluid-reasoning tests; later meta-analyses found the far-transfer effect is small (g≈0.24, Au et al. 2015) to near zero against active controls (Melby-Lervåg et al. 2016). Expect solid gains on working-memory tasks; treat IQ claims cautiously.`,
-    }, ctx.signal);
+    await intro(root, introFor('echo'), ctx.signal);
 
     let n = ctx.level || 1;
     const f = frame(root, 'Echo Grid', ctx.quit);
@@ -26,13 +20,13 @@ export default {
     const grid = el('div', { class: 'grid3' }, cells);
     const nLabel = el('div', { class: 'big-label' });
     f.stage.append(nLabel, grid);
-    const bPos = el('button', { class: 'btn resp' }, 'Position', el('kbd', {}, 'A'));
-    const bLet = el('button', { class: 'btn resp' }, 'Letter', el('kbd', {}, 'L'));
+    const bPos = el('button', { class: 'btn resp' }, t('g.echo.pos'), el('kbd', {}, 'A'));
+    const bLet = el('button', { class: 'btn resp' }, t('g.echo.let'), el('kbd', {}, 'L'));
     f.controls.append(bPos, bLet);
 
     const blocks = [];
     for (let b = 0; b < BLOCKS; b++) {
-      nLabel.textContent = `Block ${b + 1}/${BLOCKS} · N = ${n}`;
+      nLabel.textContent = t('g.echo.block', { b: b + 1, t: BLOCKS, n });
       await sleep(1500, ctx.signal);
       const len = 20 + n;
       const P = makeNbackSeq(n, len, 8, 6, ctx.rng), L = makeNbackSeq(n, len, 8, 6, ctx.rng);
@@ -64,8 +58,8 @@ export default {
       const next = nbackNextLevel(n, errs);
       blocks.push({ n, errs, d });
       beep(ctx.settings, next >= n);
-      nLabel.textContent = next > n ? `Great: up to N = ${next}` : next < n ? `Down to N = ${next}` : `Stay at N = ${n}`;
-      n = next;
+      nLabel.textContent = next > n ? t('g.echo.up', { n: next }) : next < n ? t('g.echo.down', { n: next }) : t('g.echo.stay', { n });
+      if (!ctx.fixed) n = next;
       await sleep(1200, ctx.signal);
     }
     f.progress(1);
@@ -73,7 +67,7 @@ export default {
     return {
       level: n, score: +meanN.toFixed(2),
       accuracy: 1 - mean(blocks.map(b => (b.errs[0] + b.errs[1]) / 40)),
-      summary: [`Mean N: ${meanN.toFixed(2)}`, `Next session starts at N = ${n}`, `Sensitivity d′: ${mean(blocks.map(b => b.d)).toFixed(2)}`],
+      summary: [t('g.echo.s1', { n: meanN.toFixed(2) }), t('g.echo.s2', { n }), t('g.echo.s3', { n: mean(blocks.map(b => b.d)).toFixed(2) })],
       metrics: { blocks, meanN, dprime: mean(blocks.map(b => b.d)) },
     };
   },

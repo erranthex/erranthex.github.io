@@ -1,5 +1,6 @@
 // Pattern Logic — procedurally generated matrix reasoning (RAVEN rules + I-RAVEN answer sets).
-import { el, svg, frame, intro, sleep, waitResponse, beep, now, T } from '../ui.js';
+import { introFor, el, svg, frame, intro, sleep, waitResponse, beep, now, T } from '../ui.js';
+import { t, tl } from '../i18n.js';
 import { createStaircase, stepStaircase, mean } from '../core.js';
 import { generateMatrix } from '../matrix.js';
 
@@ -34,22 +35,15 @@ export default {
   id: 'logic', name: 'Pattern Logic', domain: 'Reasoning', icon: 'logic', minutes: 5,
   tagline: 'Find the rule, complete the matrix.',
   async run(root, ctx) {
-    await intro(root, {
-      title: 'Pattern Logic · matrix reasoning',
-      how: `<p>Each row of the 3×3 grid follows rules about <b>shape, number, colour and fill</b>: a feature may stay the same, step up or down, or cycle through three values.</p>
-            <p>Pick the tile that completes the bottom-right cell. More rules are combined as you improve.</p>
-            <p>Tip: say the rule out loud for one feature at a time.</p>`,
-      keys: '1–8 to choose',
-      why: `Matrix problems are the classic measure of fluid reasoning. Practising them improves matrix solving, but improving on a test is not the same as raising intelligence. That's why the Check-up uses different tasks. Every puzzle here is freshly generated, and the answer options are balanced (I-RAVEN, Hu et al. 2021) so you can't shortcut by picking the "most typical" option. You have to find the rules.`,
-    }, ctx.signal);
+    await intro(root, introFor('logic'), ctx.signal);
 
     const f = frame(root, 'Pattern Logic', ctx.quit);
-    let st = createStaircase({ level: ctx.level || 1, min: 1, max: 8, down: 2, up: 1 });
+    let st = createStaircase({ level: ctx.level || 1, min: 1, max: 8, down: 2, up: 1, fixed: ctx.fixed });
     const res = [], start = now();
     let uid = 0;
-    for (let t = 0; t < ITEMS && now() - start < T(TIME_LIMIT); t++) {
-      f.progress(t / ITEMS);
-      f.setStatus(`Level ${st.level}`);
+    for (let ti = 0; ti < ITEMS && now() - start < T(TIME_LIMIT); ti++) {
+      f.progress(ti / ITEMS);
+      f.setStatus(t('lvl.level', { n: st.level }));
       const m = generateMatrix(st.level, ctx.rng);
       if (globalThis.__ngTest) globalThis.__ngTest.matrix = m; // test hook only
       f.stage.innerHTML = ''; f.controls.innerHTML = '';
@@ -73,7 +67,7 @@ export default {
     const acc = mean(res.map(x => +x.ok));
     return {
       level: st.level, score: Math.max(0, ...res.filter(x => x.ok).map(x => x.level)), accuracy: acc,
-      summary: [`Solved ${res.filter(x => x.ok).length}/${res.length}`, `Hardest solved: level ${Math.max(0, ...res.filter(x => x.ok).map(x => x.level))}`, `Median time: ${Math.round([...res.map(x => x.rt)].sort((a, b) => a - b)[res.length >> 1] / 1000)} s`],
+      summary: [t('g.logic.s1', { a: res.filter(x => x.ok).length, b: res.length }), t('g.logic.s2', { n: Math.max(0, ...res.filter(x => x.ok).map(x => x.level)) }), t('g.logic.s3', { n: Math.round([...res.map(x => x.rt)].sort((a, b) => a - b)[res.length >> 1] / 1000) })],
       metrics: { items: res },
     };
   },

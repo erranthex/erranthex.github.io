@@ -1,5 +1,6 @@
 // Number Sense — adaptive mental arithmetic sprint (Elevate-style; Takeuchi et al., J Neurosci 2011).
-import { el, frame, intro, sleep, beep, now, T } from '../ui.js';
+import { introFor, el, frame, intro, sleep, beep, now, T } from '../ui.js';
+import { t, tl } from '../i18n.js';
 import { createStaircase, stepStaircase, mean, randInt, pick } from '../core.js';
 
 const DURATION = 90 * 1000;
@@ -20,25 +21,21 @@ export default {
   id: 'math', name: 'Number Sense', domain: 'Numeracy', icon: 'math', minutes: 2,
   tagline: '90-second adaptive mental math sprint.',
   async run(root, ctx) {
-    await intro(root, {
-      title: 'Number Sense · mental math',
-      how: `<p>Solve as many problems as you can in <b>90 seconds</b>. Type the answer; it submits automatically when correct.</p><p>Press <b>Skip</b> if you're stuck. Difficulty adapts after every problem.</p>`,
-      keys: 'Type digits · Backspace · Enter = skip',
-      why: `Mental calculation trains numerical working memory and retrieval of arithmetic facts. Speeded arithmetic training produced gains in processing speed in a controlled study (Takeuchi et al., 2011), and fluency frees working memory for everyday quantitative decisions. Expect domain-specific gains: you'll get faster at arithmetic.`,
-    }, ctx.signal);
+    await intro(root, introFor('math'), ctx.signal);
 
     const f = frame(root, 'Number Sense', ctx.quit);
     const prob = el('div', { class: 'problem' });
     const ans = el('div', { class: 'answer', 'aria-live': 'polite' });
     f.stage.append(prob, ans);
     const keys = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '⌫', '0', 'Skip'];
-    const pad = el('div', { class: 'numpad' }, keys.map(k => el('button', { class: 'btn key' + (k === 'Skip' ? ' skip' : ''), 'data-k': k }, k)));
+    const label = (k) => (k === 'Skip' ? t('g.math.skip') : k);
+    const pad = el('div', { class: 'numpad' }, keys.map(k => el('button', { class: 'btn key' + (k === 'Skip' ? ' skip' : ''), 'data-k': k }, label(k))));
     f.controls.append(pad);
-    let st = createStaircase({ level: ctx.level || 1, min: 1, max: 12, down: 2, up: 1 });
+    let st = createStaircase({ level: ctx.level || 1, min: 1, max: 12, down: 2, up: 1, fixed: ctx.fixed });
     const res = [];
     const start = now();
     let cur, typed = '', t0, resolveItem;
-    const next = () => { cur = makeProblem(st.level, ctx.rng); typed = ''; prob.textContent = cur.text + ' ='; ans.textContent = ''; t0 = now(); f.setStatus(`Level ${st.level}`); };
+    const next = () => { cur = makeProblem(st.level, ctx.rng); typed = ''; prob.textContent = cur.text + ' ='; ans.textContent = ''; t0 = now(); f.setStatus(t('lvl.level', { n: st.level })); };
     const input = (k) => {
       if (!cur) return;
       if (k === 'Skip') { finish(false); return; }
@@ -62,7 +59,7 @@ export default {
     const solved = res.filter(r => r.ok).length;
     return {
       level: st.level, score: solved, accuracy: res.length ? solved / res.length : 0,
-      summary: [`Solved: ${solved}`, `Skipped: ${res.length - solved}`, `Reached level ${st.level}`],
+      summary: [t('g.math.s1', { n: solved }), t('g.math.s2', { n: res.length - solved }), t('g.math.s3', { n: st.level })],
       metrics: { items: res, meanRt: mean(res.filter(r => r.ok).map(r => r.rt)) },
     };
   },

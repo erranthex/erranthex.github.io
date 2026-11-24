@@ -1,11 +1,12 @@
 // Name Match — face–name associative memory with mnemonic encoding.
 // Basis: face-name mnemonic strategy training (Hampstead et al. 2008/2011; randomised fMRI trial
 // Simon et al. 2018, Frontiers in Aging Neuroscience). Faces are procedurally drawn: no photos.
-import { el, frame, intro, sleep, beep, waitResponse } from '../ui.js';
+import { introFor, el, frame, intro, sleep, beep, waitResponse } from '../ui.js';
+import { t, tl } from '../i18n.js';
 import { shuffle, clamp, mean, pick } from '../core.js';
 
 export const NAMES = ['Ada', 'Amir', 'Bea', 'Bruno', 'Chen', 'Clara', 'Dario', 'Dina', 'Eli', 'Elena', 'Femi', 'Freya', 'Gus', 'Hana', 'Hugo', 'Ines', 'Ivan', 'Jade', 'Jonah', 'Kai', 'Kira', 'Leo', 'Lina', 'Malik', 'Maya', 'Nico', 'Nora', 'Omar', 'Olga', 'Paolo', 'Priya', 'Quinn', 'Rosa', 'Ravi', 'Sami', 'Sofia', 'Tariq', 'Tess', 'Umar', 'Uma', 'Vera', 'Victor', 'Wen', 'Willa', 'Xavi', 'Yara', 'Yusuf', 'Zane', 'Zoe', 'Mateo', 'Aiko', 'Bao', 'Lucia', 'Kofi', 'Greta', 'Ezra', 'Noor', 'Felix', 'Ivy', 'Rafael'];
-const JOBS = ['baker', 'pilot', 'gardener', 'drummer', 'nurse', 'chef', 'painter', 'diver', 'teacher', 'cyclist', 'architect', 'beekeeper', 'violinist', 'farmer', 'astronomer', 'potter', 'surfer', 'librarian', 'carpenter', 'dancer'];
+const JOBS = () => tl('g.names.jobs');
 const SKIN = ['#f6d5b8', '#eabf98', '#d39b6f', '#b57a4e', '#8d5a36', '#5e3a22'];
 const HAIR = ['#1f1a17', '#4a2f1f', '#7b4a26', '#c08a4a', '#e2c27a', '#a33a1f', '#9aa0a8', '#e9e6df', '#3c5bd1', '#c2428a'];
 const SHIRT = ['#5b5bd6', '#e5484d', '#30a46c', '#f5a524', '#0091ff', '#8e4ec6', '#12a594', '#e93d82'];
@@ -57,28 +58,22 @@ export default {
   id: 'names', name: 'Name Match', domain: 'Memory', icon: 'names', minutes: 4,
   tagline: 'Remember who is who: faces, names and a clue.',
   async run(root, ctx) {
-    await intro(root, {
-      title: 'Name Match · face–name memory',
-      how: `<p>Meet a few people. Each has a <b>name</b> and a <b>job</b>.</p>
-            <p>Use the 3-step trick: ① pick a distinctive feature, ② turn the name into an image (Rosa → a rose), ③ link them (a rose tucked behind her glasses).</p>
-            <p>After a short break, pick each person's name.</p>`,
-      why: `Forgetting names is the most common everyday memory complaint. Face–name mnemonic training improved face–name memory in people with mild cognitive impairment and increased activity in memory-related temporal-lobe regions in a randomised fMRI trial (Simon et al., 2018; Hampstead et al., 2008–2011). It teaches an associative-binding strategy you can use at your next party.`,
-    }, ctx.signal);
+    await intro(root, introFor('names'), ctx.signal);
     const n = clamp(ctx.level || 4, 3, 12);
     const f = frame(root, 'Name Match', ctx.quit);
     const people = [], used = new Set();
     const names = shuffle(NAMES, ctx.rng).slice(0, n);
     for (let i = 0; i < n; i++) {
       let g; do { g = randomFace(ctx.rng); } while (used.has(faceKey(g))); used.add(faceKey(g));
-      people.push({ face: g, name: names[i], job: pick(JOBS, ctx.rng) });
+      people.push({ face: g, name: names[i], job: pick(JOBS(), ctx.rng) });
     }
     if (globalThis.__ngTest) globalThis.__ngTest.people = people;
     // Study
     for (let i = 0; i < n; i++) {
       f.progress(i / (2 * n)); f.stage.innerHTML = ''; f.controls.innerHTML = '';
       const p = people[i];
-      const next = el('button', { class: 'btn primary big' }, i === n - 1 ? 'Done' : 'Next person');
-      f.stage.append(el('div', { class: 'muted' }, `Person ${i + 1} of ${n}`), el('div', { class: 'face-wrap', html: drawFace(p.face) }), el('div', { class: 'nm-name', 'data-name': p.name }, p.name), el('div', { class: 'muted' }, `the ${p.job}`), el('p', { class: 'tip' }, 'Feature → name-image → link.'));
+      const next = el('button', { class: 'btn primary big' }, i === n - 1 ? t('btn.done') : t('g.names.next'));
+      f.stage.append(el('div', { class: 'muted' }, t('g.names.person', { i: i + 1, n })), el('div', { class: 'face-wrap', html: drawFace(p.face) }), el('div', { class: 'nm-name', 'data-name': p.name }, p.name), el('div', { class: 'muted' }, t('g.names.the', { job: p.job })), el('p', { class: 'tip' }, t('g.names.tip')));
       f.controls.append(next); next.disabled = true;
       await sleep(1200, ctx.signal); next.disabled = false;
       await new Promise((res, rej) => { next.onclick = res; ctx.signal.addEventListener('abort', () => rej(new DOMException('aborted', 'AbortError')), { once: true }); });
@@ -86,7 +81,7 @@ export default {
     // Retention interval with an interfering task (count backwards).
     f.stage.innerHTML = ''; f.controls.innerHTML = '';
     const c = el('div', { class: 'problem' }, String(80 + Math.floor(ctx.rng() * 100)));
-    f.stage.append(el('p', {}, 'Short break: count backwards by 7 in your head from'), c);
+    f.stage.append(el('p', {}, t('g.names.break')), c);
     for (let s = 12; s > 0; s--) { f.setStatus(`${s}s`); await sleep(1000, ctx.signal); }
     f.setStatus('');
     // Test: each face, choose among 4 names (all from the studied set when possible).
@@ -96,7 +91,7 @@ export default {
       const p = order[i];
       const lures = shuffle(people.filter(q => q !== p).map(q => q.name).concat(shuffle(NAMES.filter(x => !names.includes(x)), ctx.rng).slice(0, 2)), ctx.rng).slice(0, 3);
       const opts = shuffle([p.name, ...lures], ctx.rng);
-      f.stage.append(el('div', { class: 'face-wrap', html: drawFace(p.face) }), el('div', { class: 'q' }, 'Who is this?'));
+      f.stage.append(el('div', { class: 'face-wrap', html: drawFace(p.face) }), el('div', { class: 'q' }, t('g.names.who')));
       const bs = opts.map(o => el('button', { class: 'btn resp nm-opt', 'data-name': o }, o));
       f.controls.append(el('div', { class: 'nm-opts' }, bs));
       if (globalThis.__ngTest) globalThis.__ngTest.current = p.name; // test hook only
@@ -108,7 +103,7 @@ export default {
     }
     f.progress(1);
     const p = mean(res.map(Number));
-    const next = p >= 0.9 ? Math.min(12, n + 1) : p < 0.6 ? Math.max(3, n - 1) : n;
-    return { level: next, score: res.filter(Boolean).length, accuracy: p, summary: [`Recognised ${res.filter(Boolean).length}/${n} people`, `Next time: ${next} people`, 'Try it for real: use the trick on the next person you meet.'], metrics: { recall: p, n } };
+    const next = ctx.fixed ? n : p >= 0.9 ? Math.min(12, n + 1) : p < 0.6 ? Math.max(3, n - 1) : n;
+    return { level: next, score: res.filter(Boolean).length, accuracy: p, summary: [t('g.names.s1', { a: res.filter(Boolean).length, b: n }), t('g.names.s2', { n: next }), t('g.names.s3')], metrics: { recall: p, n } };
   },
 };

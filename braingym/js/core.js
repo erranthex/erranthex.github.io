@@ -6,12 +6,14 @@ export const DAY = 86400000;
 // ---------- Adaptive staircase ----------
 // n-down / 1-up staircase (Levitt, 1971). 2-down-1-up converges on ~70.7% correct,
 // 3-down-1-up on ~79.4%. Keeps the player in the "desirable difficulty" zone.
-export function createStaircase({ level = 1, min = 1, max = 20, down = 2, up = 1 } = {}) {
-  return { level: clamp(level, min, max), min, max, down, up, streak: 0, misses: 0, reversals: 0, lastDir: 0, history: [] };
+// fixed: true holds the level constant (manual difficulty chosen by the player).
+export function createStaircase({ level = 1, min = 1, max = 20, down = 2, up = 1, fixed = false } = {}) {
+  return { level: clamp(level, min, max), min, max, down, up, fixed, streak: 0, misses: 0, reversals: 0, lastDir: 0, history: [] };
 }
 
 export function stepStaircase(s, correct) {
   const next = { ...s, history: [...s.history, { level: s.level, correct }] };
+  if (s.fixed) return next;
   let dir = 0;
   if (correct) {
     next.streak = s.streak + 1;

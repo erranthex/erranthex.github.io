@@ -1,17 +1,19 @@
 // Check-up — monthly untrained assessment battery. These tasks are NOT used in daily training,
 // so changes here are a fairer (if still imperfect) signal of transfer than game scores
 // (Simons et al., 2016 recommend measuring untrained outcomes).
-import { el, frame, intro, sleep, waitResponse, beep, now } from '../ui.js';
+import { introFor, el, frame, intro, sleep, waitResponse, beep, now } from '../ui.js';
+import { t, tl } from '../i18n.js';
 import { median, mean, shuffle, pick } from '../core.js';
 
-const COLORS = [['RED', '#e5484d'], ['BLUE', '#3e63dd'], ['GREEN', '#30a46c'], ['YELLOW', '#f5d90a']];
+const HEX = ['#e5484d', '#3e63dd', '#30a46c', '#f5d90a'];
+const COLORS = () => tl('g.checkup.colors').map((n, i) => [n, HEX[i]]);
 
 async function choiceRT(f, ctx) {
   f.stage.innerHTML = ''; f.controls.innerHTML = '';
   const box = el('div', { class: 'crt' }, el('div', {}), el('div', {}));
-  const bl = el('button', { class: 'btn resp' }, 'Left', el('kbd', {}, '←'));
-  const br = el('button', { class: 'btn resp' }, 'Right', el('kbd', {}, '→'));
-  f.stage.append(el('p', {}, '1/3 · Reaction: tap the side where the dot appears, as fast as you can.'), box);
+  const bl = el('button', { class: 'btn resp' }, t('g.checkup.left'), el('kbd', {}, '←'));
+  const br = el('button', { class: 'btn resp' }, t('g.checkup.right'), el('kbd', {}, '→'));
+  f.stage.append(el('p', {}, t('g.checkup.t1')), box);
   f.controls.append(bl, br);
   await sleep(1200, ctx.signal);
   const rts = []; let errors = 0;
@@ -31,7 +33,7 @@ async function digitSpan(f, ctx) {
   f.stage.innerHTML = ''; f.controls.innerHTML = '';
   const show = el('div', { class: 'problem' });
   const typed = el('div', { class: 'answer' });
-  f.stage.append(el('p', {}, '2/3 · Digits backward: watch the digits, then type them in REVERSE order.'), show, typed);
+  f.stage.append(el('p', {}, t('g.checkup.t2')), show, typed);
   let len = 3, best = 0, fails = 0;
   while (fails < 2 && len <= 10) {
     const seq = Array.from({ length: len }, () => Math.floor(ctx.rng() * 10));
@@ -65,8 +67,9 @@ async function digitSpan(f, ctx) {
 async function stroop(f, ctx) {
   f.stage.innerHTML = ''; f.controls.innerHTML = '';
   const word = el('div', { class: 'stroop' });
-  f.stage.append(el('p', {}, '3/3 · Colours: tap the INK colour of the word, not what it says.'), word);
-  const btns = COLORS.map(([n, c], i) => el('button', { class: 'btn resp swatch', style: { background: c }, 'aria-label': n }, String(i + 1)));
+  f.stage.append(el('p', {}, t('g.checkup.t3')), word);
+  const CL = COLORS();
+  const btns = CL.map(([n, c], i) => el('button', { class: 'btn resp swatch', style: { background: c }, 'aria-label': n }, String(i + 1)));
   f.controls.append(...btns);
   await sleep(1500, ctx.signal);
   const trials = shuffle(Array.from({ length: 24 }, (_, i) => i % 2 === 0), ctx.rng);
@@ -75,7 +78,7 @@ async function stroop(f, ctx) {
     f.progress((32 + (i / trials.length) * 16) / 48);
     const ink = Math.floor(ctx.rng() * 4);
     const w = trials[i] ? ink : pick([0, 1, 2, 3].filter(k => k !== ink), ctx.rng);
-    word.textContent = COLORS[w][0]; word.style.color = COLORS[ink][1];
+    word.textContent = CL[w][0]; word.style.color = CL[ink][1];
     const r = await waitResponse({ buttons: btns.map((b, k) => [b, k]), keys: { '1': 0, '2': 1, '3': 2, '4': 3 }, timeout: 3000, signal: ctx.signal, t0: now() });
     res.push({ congruent: trials[i], ok: r.value === ink, rt: r.rt });
     word.textContent = '';
@@ -89,11 +92,7 @@ export default {
   id: 'checkup', name: 'Monthly Check-up', domain: 'Assessment', icon: 'checkup', minutes: 4, assessment: true,
   tagline: 'Untrained tasks that test whether gains transfer.',
   async run(root, ctx) {
-    await intro(root, {
-      title: 'Monthly Check-up',
-      how: `<p>Three short tasks you <b>don't</b> practise in daily training: reaction time, backward digit span and a colour-word (Stroop) test.</p><p>Do it rested, in a quiet place, ideally at the same time of day each month.</p>`,
-      why: `Brain-game scores always go up with practice; that's task learning. The real question is whether skills <i>transfer</i>. Independent reviews (Simons et al., 2016) found that most programs never test this properly. Re-testing on untrained tasks every 4 weeks gives you an honest signal. Expect some improvement simply from re-taking (practice effects), so watch the trend over several months.`,
-    }, ctx.signal);
+    await intro(root, introFor('checkup'), ctx.signal);
     const f = frame(root, 'Check-up', ctx.quit);
     const a = await choiceRT(f, ctx);
     const b = await digitSpan(f, ctx);
@@ -102,7 +101,7 @@ export default {
     const m = { ...a, ...b, ...c };
     return {
       level: 1, score: m.backwardDigitSpan, accuracy: m.stroopAccuracy,
-      summary: [`Choice reaction time: ${m.choiceRT} ms`, `Backward digit span: ${m.backwardDigitSpan}`, `Stroop interference: ${m.stroopCost} ms (accuracy ${Math.round(m.stroopAccuracy * 100)}%)`],
+      summary: [t('g.checkup.s1', { n: m.choiceRT }), t('g.checkup.s2', { n: m.backwardDigitSpan }), t('g.checkup.s3', { n: m.stroopCost, a: Math.round(m.stroopAccuracy * 100) })],
       metrics: m,
     };
   },

@@ -1,9 +1,9 @@
 // Offline-first service worker: precache the app shell, serve cache-first, refresh in background.
-const VERSION = 'mentaro-v2';
+const VERSION = 'mentaro-v3';
 const ASSETS = [
   './', './index.html', './manifest.webmanifest', './css/app.css',
   './js/app.js', './js/core.js', './js/ui.js', './js/matrix.js', './js/science.js', './js/scoring.js', './js/gamify.js', './js/icons.js',
-  './data/words.txt', './privacy.html', './terms.html', './legal.css',
+  './data/words-en.txt', './data/words-es.txt', './data/words-it.txt', './data/words-fr.txt', './data/words-de.txt', './data/words-pt.txt', './data/words-zh.txt', './js/i18n.js', './js/difficulty.js', './js/profiles.js', './privacy.html', './terms.html', './legal.css',
   './js/games/echo-grid.js', './js/games/flash-field.js', './js/games/rule-shift.js', './js/games/arrow-storm.js',
   './js/games/grid-recall.js', './js/games/pattern-logic.js', './js/games/number-sense.js', './js/games/mind-palace.js', './js/games/checkup.js',
   './js/games/word-forge.js', './js/games/name-match.js', './js/games/pathfinder.js', './js/games/orbit.js', './js/games/active-break.js',

@@ -1,5 +1,7 @@
 // Shared DOM / timing / audio helpers for games.
 import { icon, mascot } from './icons.js';
+import { t } from './i18n.js';
+import { DIFF, PRESETS, ctxValue, levelNumber } from './difficulty.js';
 
 export class Aborted extends Error { constructor() { super('aborted'); this.name = 'Aborted'; } }
 
@@ -98,7 +100,7 @@ export function speak(text, settings) {
   try {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.rate = 1.1; u.lang = 'en-US';
+    u.rate = 1.1; u.lang = settings.speechLang || 'en-US';
     speechSynthesis.speak(u);
     return true;
   } catch { return false; }
@@ -114,6 +116,7 @@ export function setCurrentGame(meta) { current = meta; }
 export function frame(root, title, onQuit) {
   root.innerHTML = '';
   root.style.setProperty('--game', current?.color || 'var(--accent)');
+  if (current?.id) root.dataset.game = current.id;
   const bar = el('div', { class: 'progress' }, el('div', { class: 'progress-fill' }));
   const status = el('div', { class: 'gstatus', 'aria-live': 'polite' });
   const combo = el('div', { class: 'combo', 'aria-live': 'polite' });
@@ -121,7 +124,7 @@ export function frame(root, title, onQuit) {
   const controls = el('div', { class: 'controls' });
   root.append(
     el('div', { class: 'ghead' },
-      el('button', { class: 'icon-btn', 'aria-label': 'Quit exercise', onclick: onQuit, html: icon('close', 20) }),
+      el('button', { class: 'icon-btn', 'aria-label': t('play.close'), onclick: onQuit, html: icon('close', 20) }),
       bar, combo),
     el('div', { class: 'gsub' }, el('span', { class: 'gtitle' }, title), status),
     stage, controls);
@@ -145,24 +148,65 @@ export function frame(root, title, onQuit) {
 
 export function flash(node, cls, ms = 250) { node.classList.add(cls); setTimeout(() => node.classList.remove(cls), ms); }
 
+// Localised intro content for an exercise.
+export function introFor(id, vars) {
+  const k = (x) => `g.${id}.${x}`;
+  return { title: `${t(k('name'))} · ${t(k('sub'))}`, how: t(k('how'), vars), why: t(k('why')), keys: t(k('keys')) };
+}
+
+// Difficulty picker: Auto (adaptive staircase) or Manual (fixed level chosen by the player).
+function diffPicker(meta) {
+  const d = DIFF[meta.id]; if (!d || !meta.ctx || meta.ctx.review) return null;
+  const autoLevel = levelNumber(meta.id, meta.autoValue);
+  let mode = meta.mode || 'auto', level = meta.manualLevel ?? autoLevel;
+  const box = el('div', { class: 'card diff' });
+  const render = () => {
+    box.innerHTML = '';
+    const seg = el('div', { class: 'seg', role: 'radiogroup', 'aria-label': t('diff.title') },
+      ...['auto', 'manual'].map(m => el('button', { class: 'seg-b' + (mode === m ? ' on' : ''), role: 'radio', 'aria-checked': String(mode === m), 'data-mode': m, onclick: () => { mode = m; render(); } }, t('lvl.' + m))));
+    box.append(el('div', { class: 'diff-h' }, el('b', {}, t('diff.title')), seg));
+    const cur = mode === 'auto' ? autoLevel : level;
+    const bar = el('div', { class: 'lvl-track' }, el('i', { style: { width: `${((cur - d.min) / (d.max - d.min)) * 100}%` } }));
+    if (mode === 'auto') box.append(el('div', { class: 'diff-row' }, el('span', { class: 'lvl-num' }, t('lvl.of', { n: autoLevel, max: d.max }))), bar, el('p', { class: 'small muted' }, t('diff.autoHelp')));
+    else {
+      const step = (dv) => { level = Math.min(d.max, Math.max(d.min, level + dv)); render(); };
+      box.append(
+        el('div', { class: 'chips' }, PRESETS.map(p => el('button', { class: 'chip-b' + (d.presets[p] === level ? ' on' : ''), 'data-preset': p, onclick: () => { level = d.presets[p]; render(); } }, t('diff.' + p)))),
+        el('div', { class: 'diff-row' }, el('button', { class: 'step', 'aria-label': t('diff.down'), onclick: () => step(-1), disabled: level <= d.min }, '−'), el('span', { class: 'lvl-num' }, t('lvl.of', { n: level, max: d.max })), el('button', { class: 'step', 'aria-label': t('diff.up'), onclick: () => step(1), disabled: level >= d.max }, '+')),
+        bar, el('p', { class: 'small muted' }, t('diff.manualHelp')));
+    }
+  };
+  render();
+  return { box, apply() {
+    if (mode === 'manual') { meta.ctx.level = ctxValue(meta.id, level); meta.ctx.fixed = true; }
+    else { meta.ctx.fixed = false; }
+    meta.onDiff?.({ mode, level });
+  } };
+}
+
 // Instruction card shown before a game; resolves on start.
 export function intro(root, { title, how, why, keys }, signal) {
   return new Promise((res, rej) => {
     root.innerHTML = '';
     root.style.setProperty('--game', current?.color || 'var(--accent)');
-    const start = el('button', { class: 'btn primary big grow', onclick: () => { unlockAudio(); res(); } }, "Let's go");
+    if (current?.id) root.dataset.game = current.id;
+    const picker = current ? diffPicker(current) : null;
+    const start = el('button', { class: 'btn primary big grow', onclick: () => { unlockAudio(); picker?.apply(); res(); } }, t('btn.letsgo'));
     const onAbort = () => rej(new Aborted());
     signal?.addEventListener('abort', onAbort, { once: true });
     const [name, sub] = title.split(' · ');
+    const sci = current?.science;
     root.append(el('div', { class: 'intro' },
       el('div', { class: 'intro-head' },
         el('div', { class: 'gtile big', html: icon(current?.icon || 'star', 40) }),
         el('div', {}, el('h2', {}, name), sub ? el('div', { class: 'muted' }, sub) : null,
           current?.domainName ? el('span', { class: 'chip' }, current.domainName) : null)),
       el('div', { class: 'card how' }, el('div', { html: how })),
-      keys ? el('p', { class: 'muted small keys-hint' }, 'Keyboard: ', keys) : null,
-      el('details', { class: 'card why' }, el('summary', {}, el('span', { html: mascot('think', 32) }), 'Why this is good for your brain'), el('p', { class: 'small', html: why })),
-      el('div', { class: 'row gap sticky-cta' }, el('button', { class: 'btn ghost', onclick: () => { signal?.removeEventListener('abort', onAbort); rej(new Aborted()); } }, 'Back'), start)));
+      picker?.box,
+      sci ? el('div', { class: 'cite' }, el('span', { html: icon('book', 16) }), el('span', { class: 'grow' }, el('b', {}, t('intro.backed') + ': '), sci.cite), el('span', { class: 'ev ev-' + sci.level }, sci.grade)) : null,
+      keys ? el('p', { class: 'muted small keys-hint' }, t('intro.keys'), keys) : null,
+      el('details', { class: 'card why' }, el('summary', {}, el('span', { html: mascot('think', 32) }), t('intro.why')), el('p', { class: 'small', html: why })),
+      el('div', { class: 'row gap sticky-cta' }, el('button', { class: 'btn ghost', onclick: () => { signal?.removeEventListener('abort', onAbort); rej(new Aborted()); } }, t('btn.back')), start)));
     start.focus();
   });
 }
@@ -200,7 +244,7 @@ export function confetti(colors = ['#7c5cff', '#ffc94d', '#3ddc97', '#ff6b9a', '
 }
 
 // In-page confirmation (native confirm() is unavailable in some embedded viewers).
-export function askConfirm(message, { yes = 'Yes', no = 'Cancel', danger = false } = {}) {
+export function askConfirm(message, { yes = t('btn.yes'), no = t('btn.cancel'), danger = false } = {}) {
   return new Promise(res => {
     const close = (v) => { m.remove(); res(v); };
     const bYes = el('button', { class: 'btn ' + (danger ? 'danger-solid' : 'primary'), onclick: () => close(true) }, yes);

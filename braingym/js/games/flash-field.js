@@ -1,11 +1,12 @@
 // Flash Field — speed-of-processing / useful-field-of-view training
 // (Ball & Owsley UFOV; ACTIVE trial: Ball et al. JAMA 2002, Edwards et al. 2017, Coe et al. 2026).
-import { el, frame, intro, sleep, raf, measureFrame, showForFrames, waitResponse, beep } from '../ui.js';
+import { introFor, el, frame, intro, sleep, raf, measureFrame, showForFrames, waitResponse, beep } from '../ui.js';
+import { t, tl } from '../i18n.js';
 import { createStaircase, stepStaircase, staircaseThreshold, mean, shuffle } from '../core.js';
 
 const DUR = [500, 400, 320, 250, 200, 160, 130, 100, 83, 67, 50, 33, 17]; // ms, log-ish spacing
-const STAGES = ['Centre + edge', 'Centre + edge + clutter', 'Wider field + clutter'];
-const MAXLEVEL = DUR.length * STAGES.length;
+const STAGES = () => [t('g.flash.stage0'), t('g.flash.stage1'), t('g.flash.stage2')];
+const MAXLEVEL = DUR.length * 3; // 3 stages
 const TRIALS = 30;
 // Original vehicle glyphs (car / truck) drawn as inline SVG.
 const CAR = '<svg viewBox="0 0 64 40" class="veh"><path d="M6 28v-7l8-2 8-9h18l10 9 8 2v7z" fill="currentColor"/><circle cx="18" cy="30" r="6" fill="var(--text)"/><circle cx="46" cy="30" r="6" fill="var(--text)"/><path d="M24 12h7v7h-13zM34 12h6l7 7H34z" fill="var(--surface)"/></svg>';
@@ -22,26 +23,19 @@ export default {
   id: 'flash', name: 'Flash Field', domain: 'Processing speed', icon: 'flash', minutes: 4,
   tagline: 'Catch the centre and the edge in a flash.',
   async run(root, ctx) {
-    await intro(root, {
-      title: 'Flash Field · useful field of view',
-      how: `<p>Look at the centre. A <b>car or truck</b> flashes in the middle while a <b>car</b> appears somewhere on the edge of the circle.</p>
-            <p>Then a mask hides everything. Answer two questions: <b>what was in the centre?</b> and <b>where was the edge car?</b></p>
-            <p>The flash gets shorter as you improve, then clutter is added.</p>`,
-      keys: '1 = car · 2 = truck, then tap a position',
-      why: `Speed-of-processing training under divided attention is the most studied form of cognitive training for older adults. In the large ACTIVE trial, about 10 hours of this type of training (with later booster sessions) improved processing speed and was associated with better long-term outcomes (Ball et al., 2002; Edwards et al., 2017). Boosters mattered, so regular return visits are built into your plan. <i>Mentaro is inspired by this research method; Mentaro itself has not been tested in that trial.</i>`,
-    }, ctx.signal);
+    await intro(root, introFor('flash'), ctx.signal);
 
     const frameMs = await measureFrame();
     const f = frame(root, 'Flash Field', ctx.quit);
     const field = el('div', { class: 'ufov' });
     f.stage.append(field);
-    let st = createStaircase({ level: Math.min(ctx.level || 1, MAXLEVEL), min: 1, max: MAXLEVEL, down: 3, up: 1 });
+    let st = createStaircase({ level: Math.min(ctx.level || 1, MAXLEVEL), min: 1, max: MAXLEVEL, down: 3, up: 1, fixed: ctx.fixed });
     const results = [];
 
-    for (let t = 0; t < TRIALS; t++) {
-      f.progress(t / TRIALS);
+    for (let ti = 0; ti < TRIALS; ti++) {
+      f.progress(ti / TRIALS);
       const { stage, ms } = levelParams(st.level);
-      f.setStatus(`${STAGES[stage]} · ${ms} ms`);
+      f.setStatus(`${STAGES()[stage]} · ${ms} ms`);
       const frames = Math.max(1, Math.round(ms / frameMs));
       const centralIdx = Math.floor(ctx.rng() * 2), slot = Math.floor(ctx.rng() * 8);
       const radius = stage === 2 ? 46 : 38;
@@ -71,12 +65,12 @@ export default {
 
       // Q1: central identity
       f.controls.innerHTML = '';
-      const bc = CENTRAL.map((c, i) => el('button', { class: 'btn resp veh-btn', 'data-kind': CENTRAL_NAMES[i], 'aria-label': CENTRAL_NAMES[i] }, el('span', { html: c }), el('kbd', {}, String(i + 1))));
-      f.controls.append(el('div', { class: 'q' }, 'Centre?'), ...bc);
+      const bc = CENTRAL.map((c, i) => el('button', { class: 'btn resp veh-btn', 'data-kind': CENTRAL_NAMES[i], 'aria-label': t('g.flash.' + CENTRAL_NAMES[i]) }, el('span', { html: c }), el('kbd', {}, String(i + 1))));
+      f.controls.append(el('div', { class: 'q' }, t('g.flash.centre')), ...bc);
       const r1 = await waitResponse({ buttons: bc.map((b, i) => [b, i]), keys: { '1': 0, '2': 1 }, signal: ctx.signal });
       f.controls.innerHTML = '';
       // Q2: peripheral location
-      f.controls.append(el('div', { class: 'q' }, 'Where was the edge car? Tap its spot.'));
+      f.controls.append(el('div', { class: 'q' }, t('g.flash.where')));
       const spots = [];
       for (let k = 0; k < 8; k++) {
         const a = (k / 8) * 2 * Math.PI - Math.PI / 2;
@@ -98,7 +92,7 @@ export default {
     const p = levelParams(Math.round(th));
     return {
       level: st.level, score: +th.toFixed(1), accuracy: mean(results.map(r => +r.ok)),
-      summary: [`Threshold: ${STAGES[p.stage]} at ~${p.ms} ms`, `Centre correct: ${Math.round(100 * mean(results.map(r => +r.centralOk)))}%`, `Edge correct: ${Math.round(100 * mean(results.map(r => +r.periphOk)))}%`, `Display refresh ≈ ${Math.round(1000 / frameMs)} Hz`],
+      summary: [t('g.flash.s1', { stage: STAGES()[p.stage], ms: p.ms }), t('g.flash.s2', { n: Math.round(100 * mean(results.map(r => +r.centralOk))) }), t('g.flash.s3', { n: Math.round(100 * mean(results.map(r => +r.periphOk))) }), t('g.flash.s4', { hz: Math.round(1000 / frameMs) })],
       metrics: { thresholdLevel: th, frameMs, trials: results },
     };
   },
