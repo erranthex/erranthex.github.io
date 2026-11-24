@@ -86,7 +86,7 @@ async function stroop(f, ctx) {
 }
 
 export default {
-  id: 'checkup', name: 'Monthly Check-up', domain: 'Assessment', icon: '🩺', minutes: 4, assessment: true,
+  id: 'checkup', name: 'Monthly Check-up', domain: 'Assessment', icon: 'checkup', minutes: 4, assessment: true,
   tagline: 'Untrained tasks that test whether gains transfer.',
   async run(root, ctx) {
     await intro(root, {

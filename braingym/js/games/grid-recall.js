@@ -5,7 +5,7 @@ import { createStaircase, stepStaircase, shuffle, mean } from '../core.js';
 const TRIALS = 12, SIZE = 16;
 
 export default {
-  id: 'grid', name: 'Grid Recall', domain: 'Working memory', icon: '🧩', minutes: 3,
+  id: 'grid', name: 'Grid Recall', domain: 'Working memory', icon: 'grid', minutes: 3,
   tagline: 'Repeat a lit-up path, sometimes backwards.',
   async run(root, ctx) {
     await intro(root, {
@@ -44,7 +44,7 @@ export default {
         if (r.value !== want[k]) { ok = false; break; }
       }
       if (!ok) want.forEach((i, k) => setTimeout(() => tiles[i].classList.add('show'), k * 120));
-      beep(ctx.settings, ok);
+      beep(ctx.settings, ok); f.hit(ok);
       res.push({ back, span: s.level, ok });
       if (back) sB = stepStaircase(sB, ok); else sF = stepStaircase(sF, ok);
       await sleep(ok ? 500 : 1400, ctx.signal);

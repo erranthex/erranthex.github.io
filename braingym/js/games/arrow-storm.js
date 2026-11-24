@@ -6,7 +6,7 @@ const TRIALS = 48, NOGO_P = 0.2;
 export const deadline = (level) => Math.max(400, Math.round(1500 * 0.92 ** (level - 1)));
 
 export default {
-  id: 'arrows', name: 'Arrow Storm', domain: 'Attention & inhibition', icon: '🎯', minutes: 3,
+  id: 'arrows', name: 'Arrow Storm', domain: 'Attention & inhibition', icon: 'arrows', minutes: 3,
   tagline: 'Follow the middle arrow, ignore the crowd.',
   async run(root, ctx) {
     await intro(root, {
@@ -39,7 +39,7 @@ export default {
       const r = await waitResponse({ buttons: [[bl, 0], [br, 1]], keys: { ArrowLeft: 0, f: 0, F: 0, ArrowRight: 1, j: 1, J: 1 }, timeout: dl, signal: ctx.signal, t0: now() });
       const ok = nogo ? r.value == null : r.value === dir;
       trials.push({ congruent, nogo, ok, rt: r.rt, responded: r.value != null });
-      if (!ok || nogo) beep(ctx.settings, ok);
+      if (!ok || nogo) beep(ctx.settings, ok); f.hit(ok);
       stim.textContent = ok ? '✓' : '✗';
       stim.className = 'arrows ' + (ok ? 'good' : 'bad');
       if (!nogo) st = stepStaircase(st, ok); // staircase on go trials; no-go accuracy reported separately

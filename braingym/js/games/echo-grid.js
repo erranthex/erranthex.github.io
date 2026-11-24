@@ -7,7 +7,7 @@ const POS = [0, 1, 2, 3, 5, 6, 7, 8]; // 3x3 grid without centre
 const BLOCKS = 3, STIM_MS = 500, TRIAL_MS = 3000;
 
 export default {
-  id: 'echo', name: 'Echo Grid', domain: 'Working memory', icon: '🔁', minutes: 4,
+  id: 'echo', name: 'Echo Grid', domain: 'Working memory', icon: 'echo', minutes: 4,
   tagline: 'Track positions and letters N steps back.',
   async run(root, ctx) {
     const audio = ctx.settings.speech && speechAvailable();
@@ -56,7 +56,7 @@ export default {
         if (i < n) continue; // nothing to compare yet
         for (const [key, target, resp, btn] of [['pos', P.targets[i], rp, bPos], ['let', L.targets[i], rl, bLet]]) {
           const t = tally[key];
-          if (target && resp) t.h++; else if (target) { t.m++; flash(btn, 'miss', 400); } else if (resp) { t.fa++; flash(btn, 'wrong', 400); } else t.cr++;
+          if (target && resp) { t.h++; f.hit(true); } else if (target) { t.m++; flash(btn, 'miss', 400); f.hit(false); } else if (resp) { t.fa++; flash(btn, 'wrong', 400); f.hit(false); } else t.cr++;
         }
       }
       const errs = [tally.pos.m + tally.pos.fa, tally.let.m + tally.let.fa];

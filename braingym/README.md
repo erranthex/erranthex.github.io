@@ -1,46 +1,65 @@
-# NeuroGym: an evidence-based brain gym
+# Mentaro Brain Gym
 
-Live at **https://erranthex.github.io/braingym/** once this branch is merged and published to GitHub Pages.
+A free, private, science-based brain gym with 13 adaptive games and a full motivation system. It is one installable web app (PWA) that runs on Mac, Windows, iPhone, iPad and Android, and works offline.
 
-A free, private, offline-capable web app (PWA) that runs on Mac, Windows, iPhone, iPad and Android from one codebase. You can install it to the home screen or dock. All data stays on the device, and you can export it as JSON from Settings.
+Live once merged to the default branch: **https://erranthex.github.io/braingym/**
 
-## Exercises
+> "Mentaro" is a working name. "NeuroGym", the earlier name, is a registered US trademark (No. 5225722), so it can't be used. Clear the new name with a trademark search before launch. It is set as `BRAND` in `js/app.js`, the `<title>`, `manifest.webmanifest` and the legal pages.
 
-| Exercise | Skill | Based on | Evidence for far transfer |
+## Exercises (13) and how each is scored
+
+| Game | Skill | Research method | Skill Index (0–1000) is based on |
 |---|---|---|---|
-| ⚡ Flash Field | Processing speed | UFOV / ACTIVE speed training (Ball, Owsley, Edwards) | **Strongest.** ACTIVE 20-yr: −25% diagnosed dementia *with boosters* |
-| 🔁 Echo Grid | Working memory | Dual n-back (Jaeggi et al. 2008) | Small/mixed (g≈0.24 → ~0 with active controls) |
-| 🧩 Grid Recall | Visuospatial WM | Corsi span, forward + backward | Near transfer only |
-| 🔀 Rule Shift | Flexibility | Cued task switching (Rogers & Monsell; Karbach & Kray 2009) | Moderate near transfer |
-| 🎯 Arrow Storm | Attention / inhibition | Flanker + go/no-go (Eriksen; Diamond; Anguera 2013) | Limited |
-| 🔷 Pattern Logic | Fluid reasoning | Procedural RAVEN rules + I-RAVEN balanced answers | Practice ≠ IQ |
-| 🏛️ Mind Palace | Long-term memory | Method of loci (Dresler 2017) + SM-2 spaced retrieval | **Strong** for memory |
-| ➗ Number Sense | Numeracy | Speeded arithmetic (Takeuchi 2011) | Domain-specific |
-| 🩺 Check-up | *Assessment* | Untrained choice RT, backward digit span, Stroop | Measures transfer |
+| Flash Field | Speed | UFOV speed-of-processing (Ball; ACTIVE) | Shortest exposure + clutter level reached |
+| Rule Shift | Flexibility | Cued task switching (Rogers & Monsell; Karbach & Kray) | Switching level + switch cost (ms) |
+| Arrow Storm | Attention | Flanker + go/no-go (Eriksen; Diamond) | Response window, interference cost, no-go accuracy |
+| Orbit Tracker | Attention | Multiple-object tracking (Pylyshyn; Legault & Faubert) | Objects tracked × speed |
+| Grid Recall | Memory | Corsi span forward/backward | Forward (40%) + backward (60%) span |
+| Echo Grid | Memory | Dual n-back (Jaeggi) | Mean N weighted by d′ |
+| Mind Palace | Memory | Method of loci + spaced retrieval (Dresler; Roediger & Karpicke) | Words recalled after a delay |
+| Name Match | Memory | Face–name mnemonic training (Hampstead; Simon 2018) | Pairs recalled after a delay |
+| Pathfinder | Memory | Route learning with map rotation (Lövdén 2012) | Longest route retraced |
+| Pattern Logic | Reasoning | Matrix reasoning (RAVEN rules, I-RAVEN answers) | Hardest rule set solved |
+| Word Forge | Language | Letter fluency / word puzzles (COG-IT 2022) | Points per minute |
+| Number Sense | Math | Speeded arithmetic (Takeuchi 2011) | Problems solved + difficulty |
+| Active Break | Body & mind | Cognitive–motor dual-task training | Not scored as a skill (XP + movement habit) |
+| Check-up | Assessment | Untrained choice RT, backward digit span, Stroop | Transfer measure (monthly) |
 
-## How NeuroGym improves on Lumosity, Elevate and memoryOS
+The Brain Index is the mean of the domain scores. Each per-game skill is smoothed over sessions (EMA, α = 0.35). Anchors are task-defined rather than population norms, so the index tracks your own change. It is not an IQ score.
 
-- **Psychophysical staircases** (Levitt 1971) in every game keep you at about 70–80% success, which is where "desirable difficulty" sits.
-- **Mechanism metrics, not points.** You see switch cost, flanker interference, d′ and exposure threshold in ms.
-- **An honest transfer check.** A monthly Check-up runs on tasks you never train.
-- **Dosing from the evidence.** The app recommends 3–5 short sessions a week (Lampit 2014), and the daily plan rotates domains and resurfaces neglected skills, which works like booster sessions.
-- **Frame-locked flashes and backward masking** make the speed task accurate on 60/120 Hz screens.
-- **Unbiased reasoning puzzles.** Answer sets follow the I-RAVEN design, so the "pick the most common features" shortcut does not work.
-- **Memory palace done properly.** A distractor interval comes before recall, each list is re-tested with SM-2 spacing, and answer matching tolerates typos.
-- **Lifestyle habits** with stronger evidence than any game: exercise, sleep, learning new skills and social contact.
-- **No overclaiming.** The app links the evidence grade and the references for every exercise.
+## Motivation system
+
+- **XP and player levels.** Accuracy, perfect rounds, level-ups and personal bests all earn bonus XP.
+- **Daily goal.** Choose 20, 50, 80 or 120 XP; a ring shows today's progress.
+- **Streak with 2 built-in rest days per week.** Rest supports consolidation (Lampit 2014). Logging a brain habit also counts as an active day. Streak freezes, bought with gems, cover longer gaps.
+- **Learning path.** Units of 6 nodes, with a treasure chest at node 3 and a unit challenge at node 6. Exercises unlock progressively.
+- **Daily quests (3)** paying gems, plus **17 achievements**.
+- **Weekly leagues.** 7 tiers; the top 3 are promoted. Rivals are clearly labelled AI until online leagues exist.
+- **Shop.** Streak freezes and colour themes.
+- **Mascot and celebrations.** Nuri the neuron, confetti, synthesized chimes, and streak and level-up screens.
+- **Reminders.** A recurring calendar file (.ics) that needs no server or account.
+- **Age-aware starting levels and comfort pacing.** After that, adaptive staircases take over.
+
+## Copyright and IP notes
+
+- **Original work.** All code, game designs, artwork, the mascot and the icons are original. Faces in Name Match are drawn procedurally, and vehicles are original SVGs.
+- **Mechanics, not expression.** Mechanics come from public academic paradigms; no competitor screens, art, sounds or level designs are copied.
+- **Word list.** `data/words.txt` is derived from *wordfreq* and licensed CC BY-SA 4.0; see `data/LICENSE-words.md`.
+- **Health claims.** Copy describes what research found for each *method* and states that the app itself has not been clinically tested. There are no disease-prevention claims.
+- **Before commercial launch:**
+  - Clear the trademark.
+  - Run a patent freedom-to-operate search (Posit Science and Lumos Labs hold training patents).
+  - Move to a proprietary license. This repo is MIT.
+  - Get a legal review of the privacy policy and terms.
 
 ## Development
 
-No build step. These are plain ES modules.
+There is no build step; the app is plain ES modules.
 
 ```bash
-cd braingym
-python3 -m http.server 8000        # open http://localhost:8000
-node --test tests/core.test.mjs    # unit tests: staircase, d′, SM-2, scheduler, matrix generator
-node tests/e2e.cjs                 # Playwright: a bot plays every game; checks scoring, adaptivity, persistence, offline, phone layout
+cd braingym && python3 -m http.server 8000      # http://localhost:8000
+node --test tests/*.test.mjs                     # 23 unit tests: staircase, d′, SM-2, scheduler, matrices, XP, streak, quests, league, scoring
+node tests/e2e.cjs                               # 92 Playwright checks: a bot plays all 13 games; onboarding, path, shop, quit, offline, phone layout
 ```
 
-The research summary and full reference list are on the in-app **Science** tab (`js/science.js`).
-
-*NeuroGym is a training tool, not a medical device.*
+*Mentaro is a training tool, not a medical device.*

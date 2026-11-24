@@ -44,13 +44,13 @@
       const layer = $('.ufov-layer');
       if (layer && layer !== S.flash.layer) {
         S.flash.layer = layer; S.flash.a1 = S.flash.a2 = false;
-        S.flash.central = layer.querySelector('.u-item.center').textContent;
+        S.flash.central = layer.querySelector('.u-item.center').dataset.kind;
         const p = layer.querySelector('.u-item.periph');
         const dx = parseFloat(p.style.left) - 50, dy = parseFloat(p.style.top) - 50;
         S.flash.slot = ((Math.round((Math.atan2(dy, dx) + Math.PI / 2) / (Math.PI / 4)) % 8) + 8) % 8;
       }
       const q = $('.controls .q')?.textContent || '';
-      if (q === 'Centre?' && !S.flash.a1) { const bs = $$('.controls .btn.resp'); const i = Math.max(0, bs.findIndex(b => S.flash.central && b.textContent.startsWith(S.flash.central))); S.flash.a1 = true; pd(bs[i]); return; }
+      if (q === 'Centre?' && !S.flash.a1) { const bs = $$('.controls .btn.resp'); const i = Math.max(0, bs.findIndex(b => b.dataset.kind === S.flash.central)); S.flash.a1 = true; pd(bs[i]); return; }
       const spots = $$('.spot');
       if (spots.length === 8 && S.flash.a1 && !S.flash.a2 && !spots.some(s => s.classList.contains('right'))) { S.flash.a2 = true; pd(spots[S.flash.slot ?? 0]); }
       return;
@@ -109,6 +109,56 @@
       if (locus && word) { S.palace.map[locus] = word.toLowerCase(); const b = $('.controls .btn.primary'); if (b && !b.disabled) b.click(); return; }
       const inp = $('.word-in');
       if (inp && locus && inp !== S.palace.input && !$('.fb')) { S.palace.input = inp; inp.value = S.palace.map[locus] || ''; $('.controls .btn.primary').click(); }
+      return;
+    }
+    const T = window.__ngTest || {}, tnow = performance.now();
+    const throttle = (k, ms) => { if (S[k] && tnow - S[k] < ms) return true; S[k] = tnow; return false; };
+    if (title === 'Word Forge') {
+      if (!T.word || !$('.wf-tiles')) return;
+      if (S.wordSeed !== T.word.seed) { S.wordSeed = T.word.seed; S.wordQueue = [...T.word.answers]; }
+      if (!S.wordQueue.length || throttle('lastWord', 30)) return;
+      const w = S.wordQueue.shift();
+      for (const ch of w) key(ch);
+      key('Enter');
+      return;
+    }
+    if (title === 'Name Match') {
+      const next = $('.controls .btn.primary');
+      if (next && !next.disabled && $('.nm-name')) { if (!throttle('lastNm', 15)) next.click(); return; }
+      const opts = $$('.nm-opt');
+      if (opts.length && T.current && !opts.some(o => o.classList.contains('right'))) {
+        if (S.nmOpts === opts[0]) return;
+        S.nmOpts = opts[0]; pd(opts.find(o => o.dataset.name === T.current));
+      }
+      return;
+    }
+    if (title === 'Pathfinder') {
+      if (!T.route || ($('.gstatus')?.textContent || '') !== 'Your turn') return;
+      const cells = $$('.pf-cell');
+      if (S.pfRoute !== T.route.route) { S.pfRoute = T.route.route; S.pfPos = 0; }
+      if (S.pfPos >= T.route.route.length - 1 || throttle('lastPf', 10)) return;
+      const [r, c] = T.route.route[++S.pfPos];
+      pd(cells.find(x => +x.dataset.r === r && +x.dataset.c === c));
+      return;
+    }
+    if (title === 'Orbit Tracker') {
+      const st = $('.gstatus')?.textContent || '', o = T.orbit, cv = $('canvas.orbit');
+      if (!o || !cv || !/^Tap \d/.test(st)) return;
+      if (S.orbBalls !== o.balls) { S.orbBalls = o.balls; S.orbDone = new Set(); }
+      if (throttle('lastOrb', 10)) return;
+      const i = o.balls.findIndex((b, k) => b.target && !S.orbDone.has(k));
+      if (i < 0) return;
+      S.orbDone.add(i);
+      const rc = cv.getBoundingClientRect();
+      cv.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, clientX: rc.left + o.balls[i].x, clientY: rc.top + o.balls[i].y }));
+      return;
+    }
+    if (title === 'Active Break') {
+      const bigEl = $('.ab-big'), big = bigEl?.textContent || '', tap = $('.ab-tap');
+      if (!tap || !/^\d+$/.test(big)) { S.abNode = null; return; }
+      if (S.abNode === big) return;
+      S.abNode = big;
+      if (+big % 3 === 0) pd(tap);
       return;
     }
     if (title === 'Check-up') {

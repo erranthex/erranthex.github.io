@@ -7,7 +7,11 @@ const DUR = [500, 400, 320, 250, 200, 160, 130, 100, 83, 67, 50, 33, 17]; // ms,
 const STAGES = ['Centre + edge', 'Centre + edge + clutter', 'Wider field + clutter'];
 const MAXLEVEL = DUR.length * STAGES.length;
 const TRIALS = 30;
-const CENTRAL = ['🚗', '🚚'];
+// Original vehicle glyphs (car / truck) drawn as inline SVG.
+const CAR = '<svg viewBox="0 0 64 40" class="veh"><path d="M6 28v-7l8-2 8-9h18l10 9 8 2v7z" fill="currentColor"/><circle cx="18" cy="30" r="6" fill="var(--text)"/><circle cx="46" cy="30" r="6" fill="var(--text)"/><path d="M24 12h7v7h-13zM34 12h6l7 7H34z" fill="var(--surface)"/></svg>';
+const TRUCK = '<svg viewBox="0 0 64 40" class="veh"><rect x="2" y="6" width="36" height="22" rx="2" fill="currentColor"/><path d="M40 12h12l8 9v7H40z" fill="currentColor"/><path d="M44 15h7l5 6H44z" fill="var(--surface)"/><circle cx="14" cy="30" r="6" fill="var(--text)"/><circle cx="50" cy="30" r="6" fill="var(--text)"/></svg>';
+const CENTRAL = [CAR, TRUCK];
+export const CENTRAL_NAMES = ['car', 'truck'];
 
 export function levelParams(level) {
   const i = level - 1;
@@ -15,7 +19,7 @@ export function levelParams(level) {
 }
 
 export default {
-  id: 'flash', name: 'Flash Field', domain: 'Processing speed', icon: '⚡', minutes: 4,
+  id: 'flash', name: 'Flash Field', domain: 'Processing speed', icon: 'flash', minutes: 4,
   tagline: 'Catch the centre and the edge in a flash.',
   async run(root, ctx) {
     await intro(root, {
@@ -24,7 +28,7 @@ export default {
             <p>Then a mask hides everything. Answer two questions: <b>what was in the centre?</b> and <b>where was the edge car?</b></p>
             <p>The flash gets shorter as you improve, then clutter is added.</p>`,
       keys: '1 = car · 2 = truck, then tap a position',
-      why: `This is the exercise family with the strongest long-term evidence. In the ACTIVE trial (2,800 adults 65+), ~10 hours of speed-of-processing training plus booster sessions was associated with a 25% lower rate of diagnosed dementia 20 years later (Coe et al., 2026); without boosters the benefit disappeared, so come back regularly. Divided-attention under time pressure trains how much you can take in at a glance.`,
+      why: `Speed-of-processing training under divided attention is the most studied form of cognitive training for older adults. In the large ACTIVE trial, about 10 hours of this type of training (with later booster sessions) improved processing speed and was associated with better long-term outcomes (Ball et al., 2002; Edwards et al., 2017). Boosters mattered, so regular return visits are built into your plan. <i>Mentaro is inspired by this research method; Mentaro itself has not been tested in that trial.</i>`,
     }, ctx.signal);
 
     const frameMs = await measureFrame();
@@ -47,11 +51,11 @@ export default {
       await sleep(600, ctx.signal);
       // Build the display off-screen, then show for an exact number of frames.
       const disp = el('div', { class: 'ufov-layer' });
-      disp.append(el('div', { class: 'u-item center' }, CENTRAL[centralIdx]));
-      const put = (r, a, txt, cls) => disp.append(el('div', { class: 'u-item ' + cls, style: { left: `${50 + r * Math.cos(a)}%`, top: `${50 + r * Math.sin(a)}%` } }, txt));
+      disp.append(el('div', { class: 'u-item center', 'data-kind': CENTRAL_NAMES[centralIdx], html: CENTRAL[centralIdx] }));
+      const put = (r, a, html, cls) => disp.append(el('div', { class: 'u-item ' + cls, style: { left: `${50 + r * Math.cos(a)}%`, top: `${50 + r * Math.sin(a)}%` }, html }));
       for (let k = 0; k < 8; k++) {
         const a = (k / 8) * 2 * Math.PI - Math.PI / 2;
-        if (k === slot) put(radius, a, '🚗', 'periph');
+        if (k === slot) put(radius, a, CAR, 'periph');
         else if (stage >= 1) put(radius, a, '▲', 'distract');
         if (stage >= 1) { put(radius * 0.55, a + Math.PI / 8, '▲', 'distract'); }
       }
@@ -67,7 +71,7 @@ export default {
 
       // Q1: central identity
       f.controls.innerHTML = '';
-      const bc = CENTRAL.map((c, i) => el('button', { class: 'btn resp' }, c, el('kbd', {}, String(i + 1))));
+      const bc = CENTRAL.map((c, i) => el('button', { class: 'btn resp veh-btn', 'data-kind': CENTRAL_NAMES[i], 'aria-label': CENTRAL_NAMES[i] }, el('span', { html: c }), el('kbd', {}, String(i + 1))));
       f.controls.append(el('div', { class: 'q' }, 'Centre?'), ...bc);
       const r1 = await waitResponse({ buttons: bc.map((b, i) => [b, i]), keys: { '1': 0, '2': 1 }, signal: ctx.signal });
       f.controls.innerHTML = '';
@@ -83,7 +87,7 @@ export default {
       const ok = r1.value === centralIdx && r2.value === slot;
       spots[slot].classList.add('right');
       if (!ok && r2.value !== slot) spots[r2.value]?.classList.add('wrongspot');
-      beep(ctx.settings, ok);
+      beep(ctx.settings, ok); f.hit(ok);
       results.push({ level: st.level, ms, shown, ok, centralOk: r1.value === centralIdx, periphOk: r2.value === slot });
       st = stepStaircase(st, ok);
       f.controls.innerHTML = '';

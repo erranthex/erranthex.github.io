@@ -3,34 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>NeuroGym · Brain Gym</title>
-  <meta name="description" content="NeuroGym: an evidence-based brain gym for memory, speed, attention, flexibility and reasoning. Free, offline, private. Works on Mac, PC, iPhone, iPad and Android.">
-  <meta name="theme-color" content="#0f1222" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)">
+  <title>Mentaro Brain Gym</title>
+  <meta name="claude:viewport-fit-sides" content="cover">
+  <meta name="description" content="Mentaro: a free, science-based brain gym. 13 adaptive games for memory, speed, attention, flexibility, reasoning, language and math. Private, offline, works on Mac, PC, iPhone, iPad and Android.">
+  <meta property="og:title" content="Mentaro Brain Gym">
+  <meta property="og:description" content="13 research-based brain games with streaks, quests and honest progress tracking.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="icons/icon-512.png">
+  <meta name="theme-color" content="#7c5cff">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/icon-180.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="NeuroGym">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Mentaro">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap">
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-  <header class="top">
-    <a class="brand" href="#/home"><img src="icons/icon.svg" alt="" width="28" height="28"> NeuroGym</a>
-    <nav aria-label="Main">
-      <a href="#/home"><span>🏠</span><em>Today</em></a>
-      <a href="#/games"><span>🎮</span><em>Exercises</em></a>
-      <a href="#/progress"><span>📈</span><em>Progress</em></a>
-      <a href="#/habits"><span>🌱</span><em>Habits</em></a>
-      <a href="#/science"><span>🔬</span><em>Science</em></a>
-      <a href="#/settings"><span>⚙️</span><em>Settings</em></a>
-    </nav>
-  </header>
+  <nav class="tabs" aria-label="Main">
+    <a class="brand" href="#learn"><img src="icons/icon.svg" alt="" width="34" height="34"><span>mentaro</span></a>
+    <a href="#learn" data-ic="home"><i></i><em>Learn</em></a>
+    <a href="#games" data-ic="grid"><i></i><em>Games</em></a>
+    <a href="#brain" data-ic="brain"><i></i><em>Brain</em></a>
+    <a href="#league" data-ic="shield"><i></i><em>League</em></a>
+    <a href="#profile" data-ic="user"><i></i><em>Profile</em></a>
+  </nav>
+  <header id="statbar"></header>
   <main id="view" tabindex="-1"></main>
   <div id="play" hidden></div>
-  <noscript><p style="padding:16px">NeuroGym needs JavaScript enabled.</p></noscript>
+  <noscript><p style="padding:16px">Mentaro needs JavaScript enabled.</p></noscript>
   <script type="module" src="js/app.js"></script>
 </body>
 </html>

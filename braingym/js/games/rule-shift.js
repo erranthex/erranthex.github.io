@@ -8,7 +8,7 @@ export const deadline = (level) => Math.max(700, Math.round(3000 * 0.9 ** (level
 export const switchProb = (level) => Math.min(0.5, 0.25 + level * 0.02);
 
 export default {
-  id: 'shift', name: 'Rule Shift', domain: 'Cognitive flexibility', icon: '🔀', minutes: 3,
+  id: 'shift', name: 'Rule Shift', domain: 'Cognitive flexibility', icon: 'shift', minutes: 3,
   tagline: 'Switch between number and letter rules.',
   async run(root, ctx) {
     await intro(root, {
@@ -46,7 +46,7 @@ export default {
       const r = await waitResponse({ buttons: [[bl, 0], [br, 1]], keys: { ArrowLeft: 0, f: 0, F: 0, ArrowRight: 1, j: 1, J: 1 }, timeout: dl, signal: ctx.signal, t0: now() });
       const ok = r.value === correct;
       trials.push({ isSwitch, ok, rt: r.rt, timeout: r.value == null });
-      beep(ctx.settings, ok);
+      beep(ctx.settings, ok); f.hit(ok);
       card.classList.add(ok ? 'good' : 'bad');
       st = stepStaircase(st, ok);
       await sleep(ok ? 250 : 600, ctx.signal);

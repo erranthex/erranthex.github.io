@@ -17,7 +17,7 @@ export function makeProblem(level, rng) {
 }
 
 export default {
-  id: 'math', name: 'Number Sense', domain: 'Numeracy', icon: '➗', minutes: 2,
+  id: 'math', name: 'Number Sense', domain: 'Numeracy', icon: 'math', minutes: 2,
   tagline: '90-second adaptive mental math sprint.',
   async run(root, ctx) {
     await intro(root, {
@@ -49,7 +49,7 @@ export default {
       else if (typed.length >= String(cur.ans).length && Number(typed) !== cur.ans) ans.classList.add('off');
       else ans.classList.remove('off');
     };
-    const finish = (ok) => { res.push({ level: st.level, ok, rt: now() - t0 }); st = stepStaircase(st, ok); beep(ctx.settings, ok); ans.classList.remove('off'); prob.classList.add(ok ? 'good' : 'bad'); setTimeout(() => prob.classList.remove('good', 'bad'), 200); next(); };
+    const finish = (ok) => { res.push({ level: st.level, ok, rt: now() - t0 }); st = stepStaircase(st, ok); beep(ctx.settings, ok); f.hit(ok); ans.classList.remove('off'); prob.classList.add(ok ? 'good' : 'bad'); setTimeout(() => prob.classList.remove('good', 'bad'), 200); next(); };
     pad.addEventListener('pointerdown', (e) => { const b = e.target.closest('button'); if (b) { e.preventDefault(); input(b.dataset.k); } });
     const onKey = (e) => { if (/^\d$/.test(e.key)) input(e.key); else if (e.key === 'Backspace') input('⌫'); else if (e.key === 'Enter') input('Skip'); };
     window.addEventListener('keydown', onKey);

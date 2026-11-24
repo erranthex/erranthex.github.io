@@ -31,7 +31,7 @@ export function drawCell(c, id) {
 }
 
 export default {
-  id: 'logic', name: 'Pattern Logic', domain: 'Reasoning', icon: '🔷', minutes: 5,
+  id: 'logic', name: 'Pattern Logic', domain: 'Reasoning', icon: 'logic', minutes: 5,
   tagline: 'Find the rule, complete the matrix.',
   async run(root, ctx) {
     await intro(root, {
@@ -64,7 +64,7 @@ export default {
       const ok = r.value === m.answerIndex;
       opts[m.answerIndex].classList.add('right');
       if (!ok) opts[r.value].classList.add('wrong');
-      beep(ctx.settings, ok);
+      beep(ctx.settings, ok); f.hit(ok);
       res.push({ level: st.level, ok, rt: r.rt, plan: m.plan });
       st = stepStaircase(st, ok);
       await sleep(ok ? 700 : 2200, ctx.signal);

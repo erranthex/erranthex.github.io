@@ -51,14 +51,14 @@ async function recallRound(f, ctx, loci, words, title) {
     const ok = matches(val, words[i]);
     answers.push({ guess: val, word: words[i], ok });
     f.stage.append(el('div', { class: ok ? 'fb good' : 'fb bad' }, ok ? '✓ ' + words[i] : `✗ It was “${words[i]}”`));
-    beep(ctx.settings, ok);
+    beep(ctx.settings, ok); f.hit(ok);
     await sleep(ok ? 500 : 1500, ctx.signal);
   }
   return answers;
 }
 
 export default {
-  id: 'palace', name: 'Mind Palace', domain: 'Long-term memory', icon: '🏛️', minutes: 6,
+  id: 'palace', name: 'Mind Palace', domain: 'Long-term memory', icon: 'palace', minutes: 6,
   tagline: 'Store words along a familiar route, then recall them.',
   // ctx.palace: { loci:[...], lists:[{id, words, card, created, history}] }; ctx.review: list to review (optional)
   async run(root, ctx) {
@@ -85,7 +85,7 @@ export default {
     const n = clamp(ctx.level || 6, 4, loci.length);
     await intro(root, {
       title: 'Mind Palace · method of loci',
-      how: `<p>Your palace is a route through a place you know well (edit it in <b>Settings</b>). Here are the first ${n} spots: <i>${loci.slice(0, n).join(' → ')}</i>.</p>
+      how: `<p>Your palace is a route through a place you know well (edit it in <b>Profile</b>). Here are the first ${n} spots: <i>${loci.slice(0, n).join(' → ')}</i>.</p>
             <p>You'll see ${n} words. For each, <b>picture the object at that spot</b> as a vivid, bizarre scene, then tap <b>Placed</b>.</p>
             <p>After a short break, walk the route and recall each word. It's saved for <b>spaced reviews</b> over the coming days.</p>`,
       why: `The method of loci is the technique memory champions use. In Dresler et al. (Neuron, 2017), novices who practised it for 6 weeks (30 min/day) roughly doubled their word-list recall, kept much of the gain 4 months later, and their brain connectivity shifted toward that of memory athletes. Unlike most brain games, this is a <i>strategy</i> you can use in real life: shopping lists, speeches, names.`,

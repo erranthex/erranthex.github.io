@@ -1,0 +1,8 @@
+:root { --bg: #f7f6fb; --text: #1d1b3a; --muted: #6b6788; --accent: #7c5cff; --border: #e4e1f0; color-scheme: light; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #12111c; --text: #f1effa; --muted: #a9a4c4; --accent: #9b85ff; --border: #2f2c45; color-scheme: dark; } }
+:root[data-theme="dark"] { --bg: #12111c; --text: #f1effa; --muted: #a9a4c4; --accent: #9b85ff; --border: #2f2c45; color-scheme: dark; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.65 "Nunito", system-ui, sans-serif; }
+main { max-width: 68ch; margin: 0 auto; padding-block: 40px 80px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2 { font-family: "Fredoka", "Nunito", system-ui, sans-serif; font-weight: 600; text-wrap: balance; }
+h2 { margin-top: 2em; border-top: 2px solid var(--border); padding-top: 1em; font-size: 1.25rem; }
+a { color: var(--accent); } .muted { color: var(--muted); }

@@ -196,14 +196,20 @@ export function makeNbackSeq(n, length, alphabetSize, targetCount, rng = Math.ra
 // ---------- Storage ----------
 export const SCHEMA = 1;
 export function defaultState() {
-  return { schema: SCHEMA, created: Date.now(), levels: {}, results: [], sessions: [], checkups: [], palace: { lists: [] }, habits: {}, settings: { sound: true, speech: true, reduceMotion: false } };
+  return {
+    schema: SCHEMA, created: Date.now(), levels: {}, results: [], sessions: [], checkups: [], palace: { lists: [] }, habits: {},
+    settings: { sound: true, speech: true, reduceMotion: false, theme: 'violet', colorScheme: 'auto' },
+    profile: { name: '', age: '', focus: [], goal: 50, onboarded: false },
+    xp: 0, gems: 50, freezes: 0, freezesUsed: [], path: { done: 0 }, league: { tier: 0, promotions: 0 },
+    achievements: {}, quests: {}, workouts: 0, bests: {}, bestStreak: 0, owned: ['violet'],
+  };
 }
 export function migrate(s) {
   const d = defaultState();
   if (!s || typeof s !== 'object') return d;
-  return { ...d, ...s, settings: { ...d.settings, ...(s.settings || {}) }, palace: { ...d.palace, ...(s.palace || {}) }, schema: SCHEMA };
+  return { ...d, ...s, settings: { ...d.settings, ...(s.settings || {}) }, palace: { ...d.palace, ...(s.palace || {}) }, profile: { ...d.profile, ...(s.profile || {}) }, path: { ...d.path, ...(s.path || {}) }, league: { ...d.league, ...(s.league || {}) }, schema: SCHEMA };
 }
-export function createStore(backend, key = 'braingym.v1') {
+export function createStore(backend, key = 'mentaro.v1') {
   let state;
   try { state = migrate(JSON.parse(backend.getItem(key))); } catch { state = defaultState(); }
   return {
